@@ -1,0 +1,45 @@
+#ifndef _APP_COM_H
+#define _APP_COM_H
+
+#include "app.convstr.h"
+#include "app.com.h"
+#include "app.man.h"
+#include "lib.avl.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <ntddk.h>
+
+typedef enum
+{
+    COMMAND_EMPTY   = -3,
+    COMMAND_UNKNOWN = -2,
+    COMMAND_EXIT    = -1,
+    
+    COMMAND_INIT    = 0,
+    COMMAND_CHECK   = 1,
+    COMMAND_MAP     = 2,
+    COMMAND_UNMAP   = 3,
+    COMMAND_PRINT   = 4,
+    COMMAND_READ    = 5,
+    COMMAND_WRITE   = 6,
+}
+APP_COMMAND;
+
+VOID InitCommandString(char **comS, int *InputLimit, int *comC, char ***comV);
+VOID DeinitCommandString(char **comS, int *InputLimit, int *comC, char ***comV);
+VOID ReadCommandString(char **comS, int *InputLimit, int *comC, char ***comV);
+
+APP_COMMAND CheckCommand(char *S);
+
+VOID DoOnCommandInit(int comC, char **comV);
+
+VOID DoOnCommandCheck(int comC, char **comV);
+VOID DoOnCommandMap(int comC, char **comV);
+VOID DoOnCommandUnmap(int comC, char **comV);
+
+VOID DoOnCommandPrint(int comC, char **comV);
+VOID DoOnCommandRead(int comC, char **comV);
+VOID DoOnCommandWrite(int comC, char **comV);
+
+
+#endif //_APP_COM_H
