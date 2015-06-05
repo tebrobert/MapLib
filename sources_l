@@ -16,4 +16,4 @@ TARGETLIBS          = $(SDK_LIB_PATH)\ntoskrnl.lib
 
 INCLUDES            = $(DDK_INC_PATH); $(KMDF_INC_PATH)\$(KMDF_VER_PATH); inc;
 
-SOURCES             = lib.avl.c
+SOURCES             = lib.avl.c lib.map.c

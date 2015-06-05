@@ -1,10 +1,6 @@
 ﻿#ifndef _APP_MAN_H
 #define _APP_MAN_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <lib.avl.h>
 
 void printTriplet(appTRIPLET* I);
 

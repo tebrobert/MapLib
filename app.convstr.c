@@ -1,7 +1,4 @@
-#include <stdlib.h>
-#include <string.h>
-#include <ntddk.h>
-#include <stdio.h>/////////////
+#include "app.a.h"
 
 BOOLEAN isDec(char *S){
     int i;
@@ -129,17 +126,10 @@ char** split(char* S){
 }
 
 void freeArr(void **SArr){
-    int i = 0;
-    for(i = 0; SArr[i] != NULL; i++){
-        // printf("%d[1]\n",i);
-        // printf("SArr[%d] = %x\n", i, SArr[i]);
-        free(SArr[i]);
-        // printf("%d[2]\n",i);
-    }
-    // printf("[1]\n");
-    // printf("SArr = %x\n", SArr);
-    free(SArr);
-    // printf("[2]\n");
+    int i;
+    for(i = 0; SArr[i] != NULL; i++)
+        MemoryFree(SArr[i]);
+    MemoryFree(SArr);
 }
 
 char lengthArr(char **SArr) {

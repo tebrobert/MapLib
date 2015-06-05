@@ -1,8 +1,4 @@
-﻿#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "app.convstr.h"
-#include "lib.avl.h"
+﻿#include "app.a.h"
 
 void printTriplet(appTRIPLET* I){
     printf("[%d, %d)->[%d, %d)\n",
@@ -10,6 +6,100 @@ void printTriplet(appTRIPLET* I){
         I->B, I->B + I->k
     );
 }
+
+char
+readByte(const char *fileName, appBLOCK A, BOOLEAN *ok)
+{
+    //Start vars
+    ULONG i, fileSize;
+    char   buffer;
+    size_t result;
+    FILE *filePtr;
+    
+    //Open file
+    filePtr = fopen(fileName, "r+b");
+    if(filePtr == NULL)
+    {
+        printf("Can't open file!\n\n");
+        *ok = FALSE;
+        return (char)NULL;
+    }
+    fseek(filePtr , 0, SEEK_END);
+    fileSize = ftell(filePtr);
+    rewind(filePtr);
+    
+    //Check
+    if(A >= fileSize)
+    {
+        printf("Can't read out of file!\n\n");
+        *ok = FALSE;
+        fclose(filePtr);
+        return (char)NULL;
+    }
+    
+    //Read byte
+    fseek(filePtr , A, SEEK_SET);
+    result = fread(&buffer, sizeof(char), 1, filePtr);
+    if (result != 1)
+    {
+        printf("Can't read byte!\n\n");
+        *ok = FALSE;
+        fclose(filePtr);
+        return (char)NULL;
+    }
+    
+    //Close file
+    fclose(filePtr);
+    *ok = TRUE;
+    return buffer;
+}
+
+
+
+void
+writeByte(const char *fileName, appBLOCK A, char Byte, BOOLEAN *ok)
+{
+    FILE    *filePtr;
+    ULONG   i, fileSize;
+    void    *Buf;
+    char    *temp;
+        
+    //Open file
+    filePtr = fopen(fileName, "r+b");
+    if (filePtr == NULL)
+    {
+        printf("Can't open file!\n\n");
+        *ok = FALSE;
+        return;
+    }
+    fseek(filePtr , 0, SEEK_END);
+    fileSize = ftell(filePtr);
+    rewind(filePtr);
+    
+    //Write file
+    if (A >= fileSize)
+    {
+        printf("Can't write out of file!\n\n");
+        fclose(filePtr);
+        *ok = FALSE;
+        return;
+    }
+    fseek(filePtr, A, SEEK_SET);
+    i = fwrite(&Byte, sizeof(char), 1, filePtr);
+    
+    //Check writing file
+    if(i != 1)
+    {
+        printf("Can't write byte!\n\n");
+        *ok = FALSE;
+    }
+    else
+    {
+        *ok = TRUE;
+    }
+    fclose(filePtr);
+}
+
 
 void
 printFile(const char *fileNeme){
@@ -145,100 +235,6 @@ writeFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName)
     fclose(filePtr);
 }
 
-
-
-char
-readByte(const char *fileName, appBLOCK A, BOOLEAN *ok)
-{
-    //Start vars
-    ULONG i, fileSize;
-    char   buffer;
-    size_t result;
-    FILE *filePtr;
-    
-    //Open file
-    filePtr = fopen(fileName, "r+b");
-    if(filePtr == NULL)
-    {
-        printf("Can't open file!\n\n");
-        *ok = FALSE;
-        return (char)NULL;
-    }
-    fseek(filePtr , 0, SEEK_END);
-    fileSize = ftell(filePtr);
-    rewind(filePtr);
-    
-    //Check
-    if(A >= fileSize)
-    {
-        printf("Can't read out of file!\n\n");
-        *ok = FALSE;
-        fclose(filePtr);
-        return (char)NULL;
-    }
-    
-    //Read byte
-    fseek(filePtr , A, SEEK_SET);
-    result = fread(&buffer, sizeof(char), 1, filePtr);
-    if (result != 1)
-    {
-        printf("Can't read byte!\n\n");
-        *ok = FALSE;
-        fclose(filePtr);
-        return (char)NULL;
-    }
-    
-    //Close file
-    fclose(filePtr);
-    *ok = TRUE;
-    return buffer;
-}
-
-
-
-void
-writeByte(const char *fileName, appBLOCK A, char Byte, BOOLEAN *ok)
-{
-    FILE    *filePtr;
-    ULONG   i, fileSize;
-    void    *Buf;
-    char    *temp;
-        
-    //Open file
-    filePtr = fopen(fileName, "r+b");
-    if (filePtr == NULL)
-    {
-        printf("Can't open file!\n\n");
-        *ok = FALSE;
-        return;
-    }
-    fseek(filePtr , 0, SEEK_END);
-    fileSize = ftell(filePtr);
-    rewind(filePtr);
-    
-    //Write file
-    if (A >= fileSize)
-    {
-        printf("Can't write out of file!\n\n");
-        fclose(filePtr);
-        *ok = FALSE;
-        return;
-    }
-    fseek(filePtr, A, SEEK_SET);
-    i = fwrite(&Byte, sizeof(char), 1, filePtr);
-    
-    //Check writing file
-    if(i != 1)
-    {
-        printf("Can't write byte!\n\n");
-        *ok = FALSE;
-    }
-    else
-    {
-        *ok = TRUE;
-    }
-    fclose(filePtr);
-}
 
 
 
