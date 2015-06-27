@@ -16,4 +16,4 @@ TARGETLIBS          = $(SDK_LIB_PATH)\ntoskrnl.lib lib.lib
 
 INCLUDES            = $(DDK_INC_PATH); $(KMDF_INC_PATH)\$(KMDF_VER_PATH); inc;
 
-SOURCES             = app.c app.convstr.c app.man.c app.com.c
+SOURCES             = app.a.c app.convstr.c app.man.c app.com.c

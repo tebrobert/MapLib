@@ -16,7 +16,6 @@ VOID MemoryFree(PVOID Buffer)
         free(Buffer);
         return;
     }
-    
     ExFreePool(Buffer);
 }
 
@@ -60,7 +59,10 @@ VOID DeleteTable(PRTL_AVL_TABLE Table)
 
 VOID InitTableArray()
 {
-    TableArray = NULL;
+    // TableArray = NULL;
+    // TableCount = 0;
+    TableArrayCapacity = 20;
+    TableArray = (PRTL_AVL_TABLE*)MemoryAllocate(TableArrayCapacity * sizeof(PRTL_AVL_TABLE));
     TableCount = 0;
 }
 
@@ -74,10 +76,15 @@ VOID DeinitTableArray()
 
 VOID appendTable(PRTL_AVL_TABLE T)
 {
+    // TableCount++;
+    // TableArray = (PRTL_AVL_TABLE*)MemoryReallocate
+    // (
+        // TableArray, (TableCount) * sizeof(PRTL_AVL_TABLE)
+    // );
+    // TableArray[TableCount - 1] = T;
+    if (TableCount == TableArrayCapacity) 
+        return;
     TableCount++;
-    TableArray = (PRTL_AVL_TABLE*)MemoryReallocate
-    (
-        TableArray, (TableCount) * sizeof(PRTL_AVL_TABLE)
-    );
     TableArray[TableCount - 1] = T;
+    
 }

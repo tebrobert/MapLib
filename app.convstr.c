@@ -114,7 +114,7 @@ char** split(char* S){
     for(i = 0; S[i] != '\0'; i++){
         if (S[i] == ' ') continue;
         for(w = 0; S[i + w] != ' ' && S[i + w] != '\0'; w++);
-        SArr[N] = malloc(w);
+        SArr[N] = malloc(w + 1);
         for(j = 0; j < w; j++){
             SArr[N][j] = S[i + j];
         }
@@ -128,7 +128,9 @@ char** split(char* S){
 void freeArr(void **SArr){
     int i;
     for(i = 0; SArr[i] != NULL; i++)
+    {
         MemoryFree(SArr[i]);
+    }
     MemoryFree(SArr);
 }
 

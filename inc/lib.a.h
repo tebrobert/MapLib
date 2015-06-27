@@ -21,11 +21,9 @@ LIB_MODE;
 PRTL_AVL_TABLE Table;
 PRTL_AVL_TABLE *TableArray;
 int TableCount;
+int TableArrayCapacity;
 
 LIB_MODE LibraryMode;
-PRTL_AVL_TABLE Table;
-PRTL_AVL_TABLE *TableArray;
-int TableCount;
 
 PVOID MemoryAllocate(int NumberOfBytes);
 VOID MemoryFree(PVOID Buffer);

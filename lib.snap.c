@@ -2,6 +2,10 @@
 
 VOID SnapshotMake()
 {
+    // appendTable(Table);
+    // Table = CreateTable();
+    if (TableCount == TableArrayCapacity) 
+        return;
     appendTable(Table);
     Table = CreateTable();
 }

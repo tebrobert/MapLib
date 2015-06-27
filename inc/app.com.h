@@ -3,6 +3,15 @@
 
 #include <ntddk.h>
 
+typedef struct APP_COMMAND_STRING_
+{
+    int InputLimit;
+    int comC;
+    char *comS;
+    char **comV;
+}
+APP_COMMAND_STRING;
+
 typedef enum
 {
     COMMAND_CLS     = -4,
@@ -22,9 +31,11 @@ typedef enum
 }
 APP_COMMAND;
 
-VOID InitCommandString(char **comS, int *InputLimit, int *comC, char ***comV);
-VOID DeinitCommandString(char **comS, int *InputLimit, int *comC, char ***comV);
-VOID ReadCommandString(char **comS, int *InputLimit, int *comC, char ***comV);
+APP_COMMAND_STRING CommandString;
+
+VOID InitCommandString();
+VOID DeinitCommandString();
+VOID ReadCommandString();
 
 APP_COMMAND CheckCommand(char *S);
 

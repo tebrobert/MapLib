@@ -208,8 +208,10 @@ BOOLEAN mapNode(appBLOCK A, appBLOCK B, appNUMBER k){
     RtlInsertElementGenericTableAvl(Table, &New, sizeof(New), &ok);
 
     //Add the splitted intervals
-    if(EdgeLeft != NULL) addNode(EdgeOuterLeft.A, EdgeOuterLeft.B, EdgeOuterLeft.k);
-    if(EdgeRight != NULL) addNode(EdgeOuterRight.A, EdgeOuterRight.B, EdgeOuterRight.k);
+    if (EdgeLeft != NULL)
+        addNode(EdgeOuterLeft.A, EdgeOuterLeft.B, EdgeOuterLeft.k);
+    if (EdgeRight != NULL)
+        addNode(EdgeOuterRight.A, EdgeOuterRight.B, EdgeOuterRight.k);
 
     return ok;
 }

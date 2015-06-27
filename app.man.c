@@ -1,14 +1,16 @@
 ﻿#include "app.a.h"
 
-void printTriplet(appTRIPLET* I){
-    printf("[%d, %d)->[%d, %d)\n",
+void printTriplet(appTRIPLET* I)
+{
+    printf
+    (
+        "[%d, %d)->[%d, %d)\n",
         I->A, I->A + I->k,
         I->B, I->B + I->k
     );
 }
 
-char
-readByte(const char *fileName, appBLOCK A, BOOLEAN *ok)
+char readByte(const char *fileName, appBLOCK A, BOOLEAN *ok)
 {
     //Start vars
     ULONG i, fileSize;
@@ -54,10 +56,7 @@ readByte(const char *fileName, appBLOCK A, BOOLEAN *ok)
     return buffer;
 }
 
-
-
-void
-writeByte(const char *fileName, appBLOCK A, char Byte, BOOLEAN *ok)
+void writeByte(const char *fileName, appBLOCK A, char Byte, BOOLEAN *ok)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -101,8 +100,7 @@ writeByte(const char *fileName, appBLOCK A, char Byte, BOOLEAN *ok)
 }
 
 
-void
-printFile(const char *fileNeme){
+void printFile(const char *fileNeme){
     //Start vars
     ULONG i, fileSize;
     void *buffer;
@@ -153,8 +151,7 @@ printFile(const char *fileNeme){
     fclose(filePtr);
 }
 
-void
-readFile(appBLOCK A, appNUMBER k, const char *fileName)
+void readFile(appBLOCK A, appNUMBER k, const char *fileName)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -193,8 +190,7 @@ readFile(appBLOCK A, appNUMBER k, const char *fileName)
     fclose(filePtr);
 }
 
-void
-writeFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName)
+void writeFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -239,8 +235,7 @@ writeFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName)
 
 
 
-void
-printVirtualFile(const char *fileName, PRTL_AVL_TABLE Table)
+void printVirtualFile(const char *fileName, PRTL_AVL_TABLE Table)
 {
     //Start vars
     ULONG i;
@@ -265,14 +260,17 @@ printVirtualFile(const char *fileName, PRTL_AVL_TABLE Table)
         {
             printf("xx ");
         }
-        if(i % 16 == 7) printf("  ");
-        if(i % 16 == 15) printf("\n");
+        
+        if(i % 16 == 7)
+            printf("  ");
+        if(i % 16 == 15)
+            printf("\n");
     }
+    
     i--;
+    
     if(i % 16 != 15)
-    {
         printf("\n");
-    }
     printf("\n");
 }
 
@@ -319,10 +317,11 @@ writeVirtualFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName, PR
     {
         B = checkNode(A + i, &ok);
         if(ok)
-        {
             writeByte(fileName, B, str2hex(Bytes[i]), &ok);
-        }
     }
-    if(!ok) printf("Can't write bytes\n\n");
-    else printf("Write success!\n\n");
+    
+    if (!ok)
+        printf("Can't write bytes\n\n");
+    else
+        printf("Write success!\n\n");
 }

@@ -1,28 +1,28 @@
 #include "app.a.h"
 
-VOID InitCommandString(char **comS, int *InputLimit, int *comC, char ***comV)
+VOID InitCommandString()
 {
-    *InputLimit = 200;
-    *comS = (char*)malloc(*InputLimit + 1);
-    
-    if (*comS == NULL)
+    CommandString.InputLimit = 200;
+    CommandString.comS = (char*)malloc(CommandString.InputLimit + 1);
+    if (CommandString.comS == NULL)
+    {
         exit(1);
-    
-    *comV = split("");
+    }
+    CommandString.comV = split("");
 }
 
-VOID DeinitCommandString(char **comS, int *InputLimit, int *comC, char ***comV)
+VOID DeinitCommandString()
 {
-    freeArr(*comV);
-    free(*comS);
+    freeArr(CommandString.comV);
+    free(CommandString.comS);
 }
 
-VOID ReadCommandString(char **comS, int *InputLimit, int *comC, char ***comV)
+VOID ReadCommandString()
 {
-    freeArr(*comV);
-    fgets(*comS, *InputLimit, stdin);
-    *comV = split(*comS);
-    *comC = lengthArr(*comV);
+    freeArr(CommandString.comV);
+    fgets(CommandString.comS, CommandString.InputLimit, stdin);
+    CommandString.comV = split(CommandString.comS);
+    CommandString.comC = lengthArr(CommandString.comV);
 }
 
 APP_COMMAND CheckCommand(char *S)
@@ -285,21 +285,22 @@ VOID DoOnCommandWrite(int comC, char **comV)
     writeVirtualFile(A, k, &comV[3], "hard", Table);
 }
 
-VOID DoOnCommandSnapshot(int comC, char **comV)
+void DoOnCommandSnapshot(int comC, char **comV)
 {
-    if(comC < 2 || strcmp(comV[1], "help") == 0){
+    if (comC < 2 || strcmp(comV[1], "help") == 0)
+    {
         printf("Usage: snapshot count\n");
         printf("Usage: snapshot make\n");
         return;
     }
     
-    if(strcmp(comV[1], "count") == 0)
+    if (strcmp(comV[1], "count") == 0)
     {
         printf("%d\n", SnapshotCount());
         return;
     }
     
-    if(strcmp(comV[1], "make") == 0)
+    if (strcmp(comV[1], "make") == 0)
     {
         SnapshotMake();
         return;

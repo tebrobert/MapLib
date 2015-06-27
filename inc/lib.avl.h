@@ -5,7 +5,14 @@
 
 typedef unsigned int appBLOCK;
 typedef unsigned int appNUMBER;
-typedef struct appTRIPLET_ {appBLOCK A; appBLOCK B; appNUMBER k;} appTRIPLET;
+
+typedef struct appTRIPLET_
+{
+    appBLOCK A;
+    appBLOCK B;
+    appNUMBER k;
+}
+appTRIPLET;
 
 RTL_AVL_COMPARE_ROUTINE     CompareRoutine;
 RTL_AVL_ALLOCATE_ROUTINE    Allocate_Routine;
