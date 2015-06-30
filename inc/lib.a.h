@@ -18,12 +18,10 @@ typedef enum
 }
 LIB_MODE;
 
-PRTL_AVL_TABLE Table;
-PRTL_AVL_TABLE *TableArray;
-int TableCount;
-int TableArrayCapacity;
-
+//GLOBAL
+LIB_PTABLE Table;
 LIB_MODE LibraryMode;
+//end GLOBAL
 
 PVOID MemoryAllocate(int NumberOfBytes);
 VOID MemoryFree(PVOID Buffer);
@@ -31,11 +29,5 @@ PVOID MemoryReallocate(PVOID Buffer, int NumberOfBytes);
 
 VOID InitLibrary(BOOLEAN Mode);
 VOID DeinitLibrary();
-
-PRTL_AVL_TABLE CreateTable();
-VOID DeleteTable(PRTL_AVL_TABLE Table);
-VOID InitTableArray();
-VOID DeinitTableArray();
-VOID appendTable(PRTL_AVL_TABLE T);
 
 #endif //_LIB_A_H

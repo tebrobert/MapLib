@@ -3,7 +3,7 @@
 
 #include <ntddk.h>
 
-typedef struct APP_COMMAND_STRING_
+typedef struct
 {
     int InputLimit;
     int comC;

@@ -3,6 +3,8 @@
 
 #include <ntddk.h>
 
+#include "lib.avl.h"
+
 appBLOCK        checkNode(appBLOCK A, BOOLEAN *ok);
 //appTRIPLET**    checkArrNode(appBLOCK A, appNUMBER k);
 BOOLEAN         mapNode(appBLOCK A, appBLOCK B, appNUMBER k);

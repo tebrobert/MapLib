@@ -145,7 +145,6 @@ BOOLEAN mapNode(appBLOCK A, appBLOCK B, appNUMBER k){
                 *EdgeLeft, *EdgeRight,
                 EdgeOuterLeft, EdgeOuterRight,
                 *tmp, *ptr;
-    PVOID       restart;
 
     //Find the edge intervals
     PointLeft.A = A;
@@ -193,7 +192,6 @@ BOOLEAN mapNode(appBLOCK A, appBLOCK B, appNUMBER k){
     }
 
     // Delete crossing intervals
-    restart = (PVOID)((char*)(IterLeft) - 0x20);
     for(ptr = IterLeft; ptr != IterRight; )
     {
         tmp = ptr;
@@ -209,9 +207,9 @@ BOOLEAN mapNode(appBLOCK A, appBLOCK B, appNUMBER k){
 
     //Add the splitted intervals
     if (EdgeLeft != NULL)
-        addNode(EdgeOuterLeft.A, EdgeOuterLeft.B, EdgeOuterLeft.k);
+        addNode(EdgeOuterLeft);
     if (EdgeRight != NULL)
-        addNode(EdgeOuterRight.A, EdgeOuterRight.B, EdgeOuterRight.k);
+        addNode(EdgeOuterRight);
 
     return ok;
 }

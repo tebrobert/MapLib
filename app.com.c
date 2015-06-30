@@ -287,6 +287,9 @@ VOID DoOnCommandWrite(int comC, char **comV)
 
 void DoOnCommandSnapshot(int comC, char **comV)
 {
+    int k;
+    BOOLEAN ok;
+    
     if (comC < 2 || strcmp(comV[1], "help") == 0)
     {
         printf("Usage: snapshot count\n");
@@ -302,7 +305,30 @@ void DoOnCommandSnapshot(int comC, char **comV)
     
     if (strcmp(comV[1], "make") == 0)
     {
-        SnapshotMake();
+        k = SnapshotMake();
+        if (k == 0)
+            printf("Snapshot was not recorded! All slots are busy.\n");
+        else
+            printf("Snapshot recorded to slot #%d\n", k);
+        return;
+    }
+    
+    if (strcmp(comV[1], "load") == 0)
+    {
+        if(!isDec(comV[2]))
+        {
+            printf("Invalid slot number format!\n");
+            return;
+        }
+        
+        k = str2dec(comV[2]);
+        ok = SnapshotLoad(k);
+        
+        if (ok)
+            printf("Snapshot loaded.\n");
+        else
+            printf("Snapshot was not loaded! No such snapshot.\n");
+        
         return;
     }
     

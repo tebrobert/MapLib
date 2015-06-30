@@ -34,57 +34,19 @@ PVOID MemoryReallocate(PVOID Buffer, int NumberOfBytes)
 
 VOID InitLibrary(BOOLEAN Mode)
 {
+    int SlotCount = 20;
     LibraryMode = Mode;
-    InitTableArray();
+    SlotBitmask = CreateBitmask(SlotCount);
+    TableStorage = CreateTableArray(SlotCount);
     Table = CreateTable();
+    Readonly = CreateTable();
+    mapNode(0, 0, 10);
 }
 
 VOID DeinitLibrary()
 {
     DeleteTable(Table);
-    DeinitTableArray();
-}
-
-PRTL_AVL_TABLE CreateTable()
-{
-    PRTL_AVL_TABLE Table = (PRTL_AVL_TABLE)MemoryAllocate(sizeof(RTL_AVL_TABLE));
-    RtlInitializeGenericTableAvl(Table, CompareRoutine, Allocate_Routine, FreeRoutine, NULL);
-    return Table;
-}
-
-VOID DeleteTable(PRTL_AVL_TABLE Table)
-{
-    MemoryFree(Table);
-}
-
-VOID InitTableArray()
-{
-    // TableArray = NULL;
-    // TableCount = 0;
-    TableArrayCapacity = 20;
-    TableArray = (PRTL_AVL_TABLE*)MemoryAllocate(TableArrayCapacity * sizeof(PRTL_AVL_TABLE));
-    TableCount = 0;
-}
-
-VOID DeinitTableArray()
-{
-    int i;
-    for (i = 0; i < TableCount; i++)
-        DeleteTable(TableArray[i]);
-    MemoryFree(TableArray);
-}
-
-VOID appendTable(PRTL_AVL_TABLE T)
-{
-    // TableCount++;
-    // TableArray = (PRTL_AVL_TABLE*)MemoryReallocate
-    // (
-        // TableArray, (TableCount) * sizeof(PRTL_AVL_TABLE)
-    // );
-    // TableArray[TableCount - 1] = T;
-    if (TableCount == TableArrayCapacity) 
-        return;
-    TableCount++;
-    TableArray[TableCount - 1] = T;
-    
+    DeleteTable(Readonly);
+    DeleteBitmask(&SlotBitmask);
+    DeleteTableArray(&TableStorage);
 }

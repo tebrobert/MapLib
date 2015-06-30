@@ -235,7 +235,7 @@ void writeFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName)
 
 
 
-void printVirtualFile(const char *fileName, PRTL_AVL_TABLE Table)
+void printVirtualFile(const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
     ULONG i;
@@ -275,7 +275,7 @@ void printVirtualFile(const char *fileName, PRTL_AVL_TABLE Table)
 }
 
 void
-readVirtualFile(appBLOCK A, appNUMBER k, const char *fileName, PRTL_AVL_TABLE Table)
+readVirtualFile(appBLOCK A, appNUMBER k, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
     ULONG i;
@@ -303,8 +303,7 @@ readVirtualFile(appBLOCK A, appNUMBER k, const char *fileName, PRTL_AVL_TABLE Ta
     printf("\n");
 }
 
-void
-writeVirtualFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName, PRTL_AVL_TABLE Table)
+void writeVirtualFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
     ULONG i, fileSize = 10;
@@ -313,10 +312,10 @@ writeVirtualFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName, PR
     BOOLEAN ok;
     
     //Write file
-    for(i = 0; i < k; i++)
+    for (i = 0; i < k; i++)
     {
         B = checkNode(A + i, &ok);
-        if(ok)
+        if (ok)
             writeByte(fileName, B, str2hex(Bytes[i]), &ok);
     }
     

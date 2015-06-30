@@ -1,7 +1,7 @@
 ﻿#include "lib.a.h"
 
-RTL_GENERIC_COMPARE_RESULTS
-CompareRoutine(
+RTL_GENERIC_COMPARE_RESULTS CompareRoutine
+(
     __in struct _RTL_AVL_TABLE  *T,
     __in PVOID  FirstStruct,
     __in PVOID  SecondStruct
@@ -26,8 +26,8 @@ CompareRoutine(
     return GenericEqual;
 }
 
-PVOID
-Allocate_Routine(
+PVOID Allocate_Routine
+(
     __in struct _RTL_AVL_TABLE  *T,
     __in CLONG  ByteSize
 )
@@ -35,37 +35,35 @@ Allocate_Routine(
     return MemoryAllocate(ByteSize);
 }
 
-VOID
-FreeRoutine(
+VOID FreeRoutine
+(
     __in struct _RTL_AVL_TABLE  *T,
     __in PVOID  Buffer
 )
 {
-    MemoryFree(Buffer);
+    //MemoryFree(Buffer);
 }
 
-appTRIPLET*
-addNode(appBLOCK A, appBLOCK B, appNUMBER k)
+appTRIPLET* addNode(appTRIPLET T)
 {
-    appTRIPLET T = {A, B, k}, *ptr;
+    appTRIPLET *ptr;
     BOOLEAN ok;
     ptr = RtlInsertElementGenericTableAvl(Table, &T, sizeof(T), &ok);
     return ptr;
 }
 
-BOOLEAN
-existNode(appBLOCK A)
+BOOLEAN existNode(appBLOCK A)
 {
     appTRIPLET T, *P;
     T.A = A;
     T.k = 1;
     P = (appTRIPLET*)RtlLookupElementGenericTableAvl(Table, &T);
-    if(P == NULL) return FALSE;
+    if (P == NULL)
+        return FALSE;
     return TRUE;
 }
 
-appTRIPLET*
-findNode(appBLOCK A)
+appTRIPLET* findNode(appBLOCK A)
 {
     appTRIPLET T, *P;
     T.A = A;
@@ -74,8 +72,7 @@ findNode(appBLOCK A)
     return P;
 }
 
-BOOLEAN
-deleteNode(appBLOCK A)
+BOOLEAN deleteNode(appBLOCK A)
 {
     BOOLEAN ok;
     appTRIPLET *P = findNode(A);
@@ -83,8 +80,9 @@ deleteNode(appBLOCK A)
     return ok;
 }
 
-appTRIPLET* nextNode(appBLOCK A){
-    appTRIPLET *ptr, *temp;
+appTRIPLET* nextNode(appBLOCK A)
+{
+    appTRIPLET *ptr, *temp, TempStruct;
     PVOID restart;
     temp = findNode(A);
     if(temp != NULL){
@@ -92,9 +90,30 @@ appTRIPLET* nextNode(appBLOCK A){
         ptr = (appTRIPLET*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
         return ptr;
     }
-    temp = addNode(A, (appBLOCK)NULL, 1);
+    TempStruct.A = A;
+    TempStruct.B = (appBLOCK)NULL;
+    TempStruct.k = 1;
+    temp = addNode(TempStruct);
     restart = (PVOID)((char*)(temp) - 0x20);
     ptr = (appTRIPLET*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
     deleteNode(A);
     return ptr;
+}
+
+VOID splitNode(appBLOCK A, appBLOCK *L, appBLOCK *R)
+{
+}
+
+LIB_PTABLE CopyTable(LIB_PTABLE T)
+{
+    LIB_PTABLE Table = CreateTable();
+    appTRIPLET *elem = (appTRIPLET*)RtlEnumerateGenericTableAvl(T, TRUE);
+    
+    while (elem != NULL)
+    {
+        RtlInsertElementGenericTableAvl(Table, elem, sizeof(*elem), NULL);
+        elem = (appTRIPLET*)RtlEnumerateGenericTableAvl(T, FALSE);
+    }
+    
+    return Table;
 }

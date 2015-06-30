@@ -2,6 +2,8 @@
 
 int main()
 {
+    int i, j;
+    char c;
     BOOLEAN Exit = FALSE;
     LIB_MODE LibraryMode = USER_MODE;
     APP_COMMAND FirstCommand;
