@@ -5,7 +5,7 @@ int SnapshotMake()
     int k, index;
     LIB_PTABLE NewTable;
     if (TableStorage.Count == TableStorage.Capacity) 
-        return (int)NULL;
+        return -2;
     NewTable = CopyTable(Table);
     index = FindEmptySlot(&TableStorage);
     
@@ -114,10 +114,6 @@ int FindEmptySlot(LIB_PTABLE_ARRAY *TS)
         return -1;
     
     return i;
-    
-    // TS->Count++;
-    // TS->Data[TS->Count - 1] = T;
-    // return TS->Count - 1;
 }
 
 LIB_BITMASK CreateBitmask(int Cap)

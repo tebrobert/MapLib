@@ -1,6 +1,6 @@
 ﻿#include "app.a.h"
 
-void printTriplet(LIB_TRIPLET* I)
+void printTriplet(LIB_NODE* I)
 {
     printf
     (

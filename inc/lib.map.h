@@ -5,8 +5,8 @@
 
 #include "lib.avl.h"
 
-LIB_BLOCK        checkNode(LIB_BLOCK A, BOOLEAN *ok);
-//LIB_TRIPLET**    checkArrNode(LIB_BLOCK A, LIB_NUMBER k);
+LIB_BLOCK       checkNode(LIB_BLOCK A, BOOLEAN *ok);
+LIB_PNODE_ARRAY checkArrNode(LIB_BLOCK A, LIB_NUMBER k);
 BOOLEAN         mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k);
 BOOLEAN         unmapNode(LIB_BLOCK A, LIB_NUMBER k);
 

@@ -83,25 +83,29 @@ VOID DoOnCommandInit(int comC, char **comV)
 VOID DoOnCommandCheck(int comC, char **comV)
 {
         BOOLEAN ok;
-        LIB_BLOCK A, B;
+        int i;
+        LIB_BLOCK A, k, I, I_prev;
+        LIB_PNODE temp;
+        LIB_PNODE_ARRAY Buffer;
         
         if ((comC != 2 && comC != 3)  || strcmp(comV[1], "help") == 0)
         {
             printf("Usage: check [block]\n");
-            // printf("       check [block] [amount]\n");
+            printf("       check [block] [amount]\n");
             return;
         }
         
         switch (comC)
         {
             case 2:
-                if(!isDec(comV[1])){
+                if (!isDec(comV[1]))
+                {
                     printf("Invalid block format!\n");
                     return;
                 }
                 
                 A = str2dec(comV[1]);
-                if(!existNode(A))
+                if (!existNode(A))
                 {
                     printf("%d not mapped!\n", A);
                     return;
@@ -111,30 +115,51 @@ VOID DoOnCommandCheck(int comC, char **comV)
                 return;
 
             case 3:
-                if(!isDec(comV[1]) || !isDec(comV[2])){
+                if (!isDec(comV[1]) || !isDec(comV[2]))
+                {
                     printf("Invalid block or amount format!\n");
                     return;
                 }
                 
-                /*
                 A = str2dec(comV[1]);
                 k = str2dec(comV[2]);
+                
                 Buffer = checkArrNode(A, k);
-                if(Buffer == NULL) printf("Some blocks not mapped!\n\n");
-                else {
-                    nullCount = 0;
-                    for(i = 0; nullCount < 3; i++) {
-                        if(Buffer[i] != NULL && (nullCount == 0 || nullCount == 2)){
-                            printTriplet(Buffer[i]);
-                            //free(Buffer[i]);
-                        } else
-                        if(Buffer[i] == NULL) nullCount++;
-                        else printTriplet(Buffer[i]);
+                I_prev = A;
+                I = A;
+                for (i = 0; i < Buffer.Count; i++)
+                {
+                    temp = Buffer.Data[i];
+                    if (I_prev < temp->A)
+                    {
+                        printf("[%d, %d) not mapped!\n", I_prev, temp->A);
+                        I = temp->A;
                     }
-                    printf("\n");
-                    // free(Buffer);
+                    if (I > temp->A && A + k <=  temp->A + temp->k)
+                    {
+                        printf("[%d, %d) -> [%d, %d)\n", I, A + k, temp->B + I - temp->A, temp->B + (A + k) - temp->A);
+                        break;
+                    }
+                    if (I > temp->A)
+                    {
+                        printf("[%d, %d) -> [%d, %d)\n", I, temp->A + temp->k, temp->B + I - temp->A, temp->B + temp->k);
+                        I_prev = temp->A + temp->k;
+                        continue;
+                    }
+                    if (A + k <=  temp->A + temp->k)
+                    {
+                        printf("[%d, %d) -> [%d, %d)\n", temp->A, A + k, temp->B, temp->B + (A + k) - temp->A);
+                        break;
+                    }
+                    printf("[%d, %d) -> [%d, %d)\n", temp->A, temp->A + temp->k, temp->B, temp->B + temp->k);
+                    I_prev = temp->A + temp->k;
                 }
-                */
+                if (Buffer.Count == 0)
+                    printf("[%d, %d) not mapped!\n", A, A + k);
+                if (i > 0 && (A + k > temp->A + temp->k))
+                    printf("[%d, %d) not mapped!\n", temp->A + temp->k, A + k);
+                DeleteNodeArray(&Buffer);
+                
                 return;
         }
 }
@@ -292,10 +317,10 @@ void DoOnCommandSnapshot(int comC, char **comV)
     if (comC < 2 || strcmp(comV[1], "help") == 0)
     {
         printf("Usage: snapshot count\n");
-        printf("Usage: snapshot make\n");
-        printf("Usage: snapshot save [slot]\n");
-        printf("Usage: snapshot load [slot]\n");
-        printf("Usage: snapshot delete [slot]\n");
+        printf("       snapshot make\n");
+        printf("       snapshot save [slot]\n");
+        printf("       snapshot load [slot]\n");
+        printf("       snapshot delete [slot]\n");
         return;
     }
     
@@ -308,10 +333,14 @@ void DoOnCommandSnapshot(int comC, char **comV)
     if (strcmp(comV[1], "make") == 0)
     {
         k = SnapshotMake();
-        if (k == 0)
+        if (k == -2)
+        {
             printf("Snapshot was not recorded! Slot storage is full.\n");
-        else
-            printf("Snapshot recorded to slot #%d\n", k);
+            return;
+        }
+        
+        printf("Snapshot recorded to slot #%d\n", k);
+        
         return;
     }
     

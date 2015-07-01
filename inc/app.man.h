@@ -2,7 +2,7 @@
 #define _APP_MAN_H
 
 
-void printTriplet(LIB_TRIPLET* I);
+void printTriplet(LIB_NODE* I);
 
 char readByte(const char *fileName, LIB_BLOCK A, BOOLEAN *ok);
 void writeByte(const char *fileName, LIB_BLOCK A, char Byte, BOOLEAN *ok);

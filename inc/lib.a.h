@@ -19,15 +19,15 @@ typedef enum
 LIB_MODE;
 
 //GLOBAL
-LIB_PTABLE Table;
-LIB_MODE LibraryMode;
+LIB_PTABLE  Table;
+LIB_MODE    LibraryMode;
 //end GLOBAL
 
-PVOID MemoryAllocate(int NumberOfBytes);
-VOID MemoryFree(PVOID Buffer);
-PVOID MemoryReallocate(PVOID Buffer, int NumberOfBytes);
+PVOID   MemoryAllocate(int NumberOfBytes);
+VOID    MemoryFree(PVOID Buffer);
+PVOID   MemoryReallocate(PVOID Buffer, int NumberOfBytes);
 
-VOID InitLibrary(BOOLEAN Mode);
-VOID DeinitLibrary();
+VOID    InitLibrary(BOOLEAN Mode);
+VOID    DeinitLibrary();
 
 #endif //_LIB_A_H

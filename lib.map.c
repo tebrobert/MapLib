@@ -2,7 +2,7 @@
 
 
 LIB_BLOCK checkNode(LIB_BLOCK A, BOOLEAN *ok){
-    LIB_TRIPLET *P = findNode(A);
+    LIB_NODE *P = findNode(A);
     if(P == NULL){
         *ok = FALSE;
         return (LIB_BLOCK)NULL;
@@ -11,135 +11,39 @@ LIB_BLOCK checkNode(LIB_BLOCK A, BOOLEAN *ok){
     return P->B + (A - P->A);
 }
 
-// Not finished
-/*LIB_TRIPLET** checkArrNode(LIB_BLOCK A, LIB_NUMBER k){
-    ULONG       i;
-    LIB_BLOCK    checkPoint;
-    LIB_TRIPLET  PointLeft, PointRight,
-                *IterLeft, *IterRight,
-                *EdgeLeft, *EdgeRight,
-                *EdgeInnerLeft, *EdgeInnerRight,
-                *tmp, *ptr,
-                **Buffer;
-    PVOID       restart;
-    BOOLEAN     ok;
+LIB_PNODE_ARRAY checkArrNode(LIB_BLOCK A, LIB_NUMBER k)
+{
+    int i;
+    LIB_PNODE ptr;
+    LIB_PNODE_ARRAY Buffer;
     
-    //Searching points
-    PointLeft.A     = A;
-    PointLeft.k     = 1;
-    PointRight.A    = A + k - 1;
-    PointRight.k    = 1;
+    ptr = findNode(A);
+    if (ptr == NULL)
+        ptr = nextNode(A);
     
-    //Check edge points
-    if(!existNode(PointLeft.A) || !existNode(PointRight.A - 1))
+    for (i = 0; ptr != NULL && (A + k > ptr->A); i++)
     {
-        return NULL;
-    }
-    
-    //Iterate crossing intervals, check interruptions
-    IterLeft    = findNode(PointLeft.A);
-    IterRight   = nextNode(PointRight.A);
-    EdgeLeft    = IterLeft;
-    EdgeRight   = findNode(PointRight.A);
-    
-    restart = (PVOID)((char*)(IterLeft) - 0x20);
-    ptr = IterLeft;
-    checkPoint = ptr->A;
-    for(i = 0; ptr != IterRight; i++)
-    {
-        if(ptr->A != checkPoint)
-        {
-            return NULL;
-        }
-        checkPoint += ptr->k;
         ptr = nextNode(ptr->A);
     }
     
-    //Allocate memory, insert pointers
-    Buffer          = (LIB_TRIPLET**) MemoryAllocate(sizeof(LIB_TRIPLET*) * (i + 3));
-    EdgeInnerLeft   = (LIB_TRIPLET* ) MemoryAllocate(sizeof(LIB_TRIPLET ));
-    EdgeInnerRight  = (LIB_TRIPLET* ) MemoryAllocate(sizeof(LIB_TRIPLET ));
+    Buffer = CreateNodeArray(i);
     
-    //Left Edge
-    restart = (PVOID)((char*)(IterLeft) - 0x20);
-    ptr = IterLeft;
-    if(IterLeft->A == A && IterLeft->k == k) // case 1
-    {
-        MemoryFree(EdgeInnerLeft);
-        printf("Buffer[%d] = NULL\n", i); Buffer[i] = NULL;
-        printf("Buffer[%d] = ptr\n", i+1); Buffer[i+1] = ptr;
-        printf("Buffer[%d] = NULL\n", i+2); Buffer[i+2] = NULL;
-        printf("Buffer[%d] = NULL\n", i+3); Buffer[i+3] = NULL;
-        return Buffer;
-    }
-    else
-    if(A < IterLeft->A + IterLeft->k || A + k < IterLeft->A + IterLeft->k) // case 2 3 4
-    {
-        EdgeInnerLeft->A = A;
-        EdgeInnerLeft->B = IterLeft->B + (A - IterLeft->A);
-        EdgeInnerLeft->k = k;
-        printf("Buffer[%d] = NULL\n", i); Buffer[i] = EdgeInnerLeft;
-        printf("Buffer[%d] = NULL\n", i+1); Buffer[i+1] = NULL;
-        printf("Buffer[%d] = NULL\n", i+2); Buffer[i+2] = NULL;
-        printf("Buffer[%d] = NULL\n", i+3); Buffer[i+3] = NULL;
-        return Buffer;
-    }
-
-    // case 5 6 7 8
-    EdgeInnerLeft->A = A;
-    EdgeInnerLeft->B = IterLeft->B + (A - IterLeft->A);
-    EdgeInnerLeft->k = IterLeft->k - (A - IterLeft->A);
-    printf("Buffer[%d] = EdgeInnerLeft\n", i); Buffer[i] = EdgeInnerLeft;
-    i++;
-    printf("Buffer[%d] = NULL\n", i); Buffer[i] = NULL;
-
+    ptr = findNode(A);
+    if (ptr == NULL)
+        ptr = nextNode(A);
     
-    //Middle
-    for(i = 0; ptr != IterRight; i++, ptr = nextNode(ptr->A))
+    while (ptr != NULL && (A + k > ptr->A))
     {
-        if(nextNode(ptr->A) == IterRight)
-        {
-            printf("Buffer[%d] = NULL\n", i); Buffer[i] = NULL;
-            i++;
-            if(A == ptr->A)
-            {
-                MemoryFree(EdgeInnerRight);
-            }
-            else
-            if(A + k == ptr->A + ptr->k)
-            {
-                MemoryFree(EdgeInnerRight);
-                printf("Buffer[%d] = ptr\n", i); Buffer[i] = ptr;
-                i++;
-            }
-            else
-            {
-                EdgeInnerRight->A = ptr->A;
-                EdgeInnerRight->B = ptr->B;
-                EdgeInnerRight->k = A + k - ptr->A;
-                printf("Buffer[%d] = EdgeInnerRight\n", i); Buffer[i] = EdgeInnerRight;
-                i++;
-            }
-            printf("Buffer[%d] = NULL\n", i); Buffer[i] = NULL;
-            break;
-        }
-        else
-        {
-            printf("Buffer[%d] = ptr\n", i); Buffer[i] = ptr;
-        }
+        AppendNode(&Buffer, ptr);
+        ptr = nextNode(ptr->A);
     }
     
-    //Right Edge
-    
-    
-    
-    printf("---Buffer[0]->A = %d\n", Buffer[0]->A);
-    printf("return Buffer\n\n"); return Buffer;
-}*/
+    return Buffer;
+}
 
 BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k){
     BOOLEAN     ok;
-    LIB_TRIPLET  New,
+    LIB_NODE  New,
                 PointLeft, PointRight,
                 *IterLeft, *IterRight,
                 *EdgeLeft, *EdgeRight,
