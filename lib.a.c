@@ -6,7 +6,8 @@ PVOID MemoryAllocate(int NumberOfBytes)
     {
         return malloc(NumberOfBytes);
     }
-    return ExAllocatePoolWithTag(PagedPool, NumberOfBytes, 1);
+    // return ExAllocatePool(PagedPool, NumberOfBytes);
+    return ExAllocatePoolWithTag(PagedPool, NumberOfBytes, '1gaT');
 }
 
 VOID MemoryFree(PVOID Buffer)
@@ -17,6 +18,7 @@ VOID MemoryFree(PVOID Buffer)
         return;
     }
     ExFreePool(Buffer);
+    // ExFreePoolWithTag(Buffer, '1gaT');
 }
 
 PVOID MemoryReallocate(PVOID Buffer, int NumberOfBytes)

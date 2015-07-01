@@ -1,6 +1,6 @@
 ﻿#include "app.a.h"
 
-void printTriplet(appTRIPLET* I)
+void printTriplet(LIB_TRIPLET* I)
 {
     printf
     (
@@ -10,7 +10,7 @@ void printTriplet(appTRIPLET* I)
     );
 }
 
-char readByte(const char *fileName, appBLOCK A, BOOLEAN *ok)
+char readByte(const char *fileName, LIB_BLOCK A, BOOLEAN *ok)
 {
     //Start vars
     ULONG i, fileSize;
@@ -56,7 +56,7 @@ char readByte(const char *fileName, appBLOCK A, BOOLEAN *ok)
     return buffer;
 }
 
-void writeByte(const char *fileName, appBLOCK A, char Byte, BOOLEAN *ok)
+void writeByte(const char *fileName, LIB_BLOCK A, char Byte, BOOLEAN *ok)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -151,7 +151,7 @@ void printFile(const char *fileNeme){
     fclose(filePtr);
 }
 
-void readFile(appBLOCK A, appNUMBER k, const char *fileName)
+void readFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -190,7 +190,7 @@ void readFile(appBLOCK A, appNUMBER k, const char *fileName)
     fclose(filePtr);
 }
 
-void writeFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName)
+void writeFile(LIB_BLOCK A, LIB_NUMBER k, char **Bytes, const char *fileName)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -240,7 +240,7 @@ void printVirtualFile(const char *fileName, LIB_PTABLE Table)
     //Start vars
     ULONG i;
     char *S, Byte;
-    appBLOCK B;
+    LIB_BLOCK B;
     BOOLEAN ok;
     int fileSize = 10;
     
@@ -275,12 +275,12 @@ void printVirtualFile(const char *fileName, LIB_PTABLE Table)
 }
 
 void
-readVirtualFile(appBLOCK A, appNUMBER k, const char *fileName, LIB_PTABLE Table)
+readVirtualFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
     ULONG i;
     char *S, Byte;
-    appBLOCK B;
+    LIB_BLOCK B;
     BOOLEAN ok;
     int fileSize = 10;
     
@@ -303,12 +303,12 @@ readVirtualFile(appBLOCK A, appNUMBER k, const char *fileName, LIB_PTABLE Table)
     printf("\n");
 }
 
-void writeVirtualFile(appBLOCK A, appNUMBER k, char **Bytes, const char *fileName, LIB_PTABLE Table)
+void writeVirtualFile(LIB_BLOCK A, LIB_NUMBER k, char **Bytes, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
     ULONG i, fileSize = 10;
     char *S, Byte;
-    appBLOCK B;
+    LIB_BLOCK B;
     BOOLEAN ok;
     
     //Write file

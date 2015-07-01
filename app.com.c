@@ -83,7 +83,7 @@ VOID DoOnCommandInit(int comC, char **comV)
 VOID DoOnCommandCheck(int comC, char **comV)
 {
         BOOLEAN ok;
-        appBLOCK A, B;
+        LIB_BLOCK A, B;
         
         if ((comC != 2 && comC != 3)  || strcmp(comV[1], "help") == 0)
         {
@@ -142,7 +142,7 @@ VOID DoOnCommandCheck(int comC, char **comV)
 VOID DoOnCommandMap(int comC, char **comV)
 {
     int k;
-    appBLOCK A, B;
+    LIB_BLOCK A, B;
     
     if(comC != 4 || strcmp(comV[1], "help") == 0){
         printf("Usage: map [block] [block] [amount]\n");
@@ -164,7 +164,7 @@ VOID DoOnCommandMap(int comC, char **comV)
 VOID DoOnCommandUnmap(int comC, char **comV)
 {
     int k;
-    appBLOCK A;
+    LIB_BLOCK A;
     
     if(comC != 3 || strcmp(comV[1], "help") == 0){
         printf("Usage: unmap [block] [amount]\n");
@@ -205,7 +205,7 @@ VOID DoOnCommandPrint(int comC, char **comV)
 VOID DoOnCommandRead(int comC, char **comV)
 {
     int k;
-    appBLOCK A;
+    LIB_BLOCK A;
     BOOLEAN ModeHard = FALSE;
     
     if(comC != 4 || strcmp(comV[1], "help") == 0){
@@ -241,7 +241,7 @@ VOID DoOnCommandRead(int comC, char **comV)
 VOID DoOnCommandWrite(int comC, char **comV)
 {
     int k, i;
-    appBLOCK A;
+    LIB_BLOCK A;
     BOOLEAN DataIsCorrect = TRUE, ModeHard = FALSE;
     
     if(comC < 4 || strcmp(comV[1], "help") == 0){
@@ -288,12 +288,14 @@ VOID DoOnCommandWrite(int comC, char **comV)
 void DoOnCommandSnapshot(int comC, char **comV)
 {
     int k;
-    BOOLEAN ok;
     
     if (comC < 2 || strcmp(comV[1], "help") == 0)
     {
         printf("Usage: snapshot count\n");
         printf("Usage: snapshot make\n");
+        printf("Usage: snapshot save [slot]\n");
+        printf("Usage: snapshot load [slot]\n");
+        printf("Usage: snapshot delete [slot]\n");
         return;
     }
     
@@ -307,7 +309,7 @@ void DoOnCommandSnapshot(int comC, char **comV)
     {
         k = SnapshotMake();
         if (k == 0)
-            printf("Snapshot was not recorded! All slots are busy.\n");
+            printf("Snapshot was not recorded! Slot storage is full.\n");
         else
             printf("Snapshot recorded to slot #%d\n", k);
         return;
@@ -315,6 +317,12 @@ void DoOnCommandSnapshot(int comC, char **comV)
     
     if (strcmp(comV[1], "load") == 0)
     {
+        if (comC < 3)
+        {
+            printf("Usage: snapshot load [slot]\n");
+            return;
+        }
+            
         if(!isDec(comV[2]))
         {
             printf("Invalid slot number format!\n");
@@ -322,12 +330,83 @@ void DoOnCommandSnapshot(int comC, char **comV)
         }
         
         k = str2dec(comV[2]);
-        ok = SnapshotLoad(k);
+        k = SnapshotLoad(k);
         
-        if (ok)
-            printf("Snapshot loaded.\n");
-        else
-            printf("Snapshot was not loaded! No such snapshot.\n");
+        if (k == -1)
+        {
+            printf("Snapshot was not loaded! Snapshot was not saved to this slot.\n");
+            return;
+        }
+        
+        if (k == -2)
+        {
+            printf("Snapshot was not loaded! Slot number is out of range.\n");
+            return;
+        }
+        
+        printf("Snapshot #%d loaded.\n", k);
+        
+        return;
+    }
+    
+    if (strcmp(comV[1], "delete") == 0)
+    {
+        if (comC < 3)
+        {
+            printf("Usage: snapshot delete [slot]\n");
+            return;
+        }
+            
+        if(!isDec(comV[2]))
+        {
+            printf("Invalid slot number format!\n");
+            return;
+        }
+        
+        k = str2dec(comV[2]);
+        k = SnapshotDelete(k);
+        
+        if (k == -1)
+        {
+            printf("Snapshot was not deleted! Snapshot was not saved to this slot.\n");
+            return;
+        }
+        
+        if (k == -2)
+        {
+            printf("Snapshot was not deleted! Slot number is out of range.\n");
+            return;
+        }
+        
+        printf("Snapshot #%d deleted.\n", k);
+        
+        return;
+    }
+    
+    if (strcmp(comV[1], "save") == 0)
+    {
+        if (comC < 3)
+        {
+            printf("Usage: snapshot save [slot]\n");
+            return;
+        }
+            
+        if(!isDec(comV[2]))
+        {
+            printf("Invalid slot number format!\n");
+            return;
+        }
+        
+        k = str2dec(comV[2]);
+        k = SnapshotSave(k);
+        
+        if (k == -2)
+        {
+            printf("Snapshot was not saved! Slot number is out of range.\n");
+            return;
+        }
+        
+        printf("Snapshot saved to slot #%d.\n", k);
         
         return;
     }

@@ -8,12 +8,12 @@ RTL_GENERIC_COMPARE_RESULTS CompareRoutine
 )
 {
     int i, j, k1, k2;
-    appBLOCK A1, A2;
+    LIB_BLOCK A1, A2;
 
-    A1 = ((appTRIPLET*)FirstStruct)->A;
-    k1 = ((appTRIPLET*)FirstStruct)->k;
-    A2 = ((appTRIPLET*)SecondStruct)->A;
-    k2 = ((appTRIPLET*)SecondStruct)->k;
+    A1 = ((LIB_TRIPLET*)FirstStruct)->A;
+    k1 = ((LIB_TRIPLET*)FirstStruct)->k;
+    A2 = ((LIB_TRIPLET*)SecondStruct)->A;
+    k2 = ((LIB_TRIPLET*)SecondStruct)->k;
 
     if (k1 == 1 && (A1 >= A2 && A1 < A2 + k2))
         return GenericEqual;
@@ -41,78 +41,78 @@ VOID FreeRoutine
     __in PVOID  Buffer
 )
 {
-    //MemoryFree(Buffer);
+    MemoryFree(Buffer);
 }
 
-appTRIPLET* addNode(appTRIPLET T)
+LIB_TRIPLET* addNode(LIB_TRIPLET T)
 {
-    appTRIPLET *ptr;
+    LIB_TRIPLET *ptr;
     BOOLEAN ok;
     ptr = RtlInsertElementGenericTableAvl(Table, &T, sizeof(T), &ok);
     return ptr;
 }
 
-BOOLEAN existNode(appBLOCK A)
+BOOLEAN existNode(LIB_BLOCK A)
 {
-    appTRIPLET T, *P;
+    LIB_TRIPLET T, *P;
     T.A = A;
     T.k = 1;
-    P = (appTRIPLET*)RtlLookupElementGenericTableAvl(Table, &T);
+    P = (LIB_TRIPLET*)RtlLookupElementGenericTableAvl(Table, &T);
     if (P == NULL)
         return FALSE;
     return TRUE;
 }
 
-appTRIPLET* findNode(appBLOCK A)
+LIB_TRIPLET* findNode(LIB_BLOCK A)
 {
-    appTRIPLET T, *P;
+    LIB_TRIPLET T, *P;
     T.A = A;
     T.k = 1;
     P = RtlLookupElementGenericTableAvl(Table, &T);
     return P;
 }
 
-BOOLEAN deleteNode(appBLOCK A)
+BOOLEAN deleteNode(LIB_BLOCK A)
 {
     BOOLEAN ok;
-    appTRIPLET *P = findNode(A);
+    LIB_TRIPLET *P = findNode(A);
     ok = RtlDeleteElementGenericTableAvl(Table, P);
     return ok;
 }
 
-appTRIPLET* nextNode(appBLOCK A)
+LIB_TRIPLET* nextNode(LIB_BLOCK A)
 {
-    appTRIPLET *ptr, *temp, TempStruct;
+    LIB_TRIPLET *ptr, *temp, TempStruct;
     PVOID restart;
     temp = findNode(A);
     if(temp != NULL){
         restart = (PVOID)((char*)(temp) - 0x20);
-        ptr = (appTRIPLET*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
+        ptr = (LIB_TRIPLET*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
         return ptr;
     }
     TempStruct.A = A;
-    TempStruct.B = (appBLOCK)NULL;
+    TempStruct.B = (LIB_BLOCK)NULL;
     TempStruct.k = 1;
     temp = addNode(TempStruct);
     restart = (PVOID)((char*)(temp) - 0x20);
-    ptr = (appTRIPLET*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
+    ptr = (LIB_TRIPLET*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
     deleteNode(A);
     return ptr;
 }
 
-VOID splitNode(appBLOCK A, appBLOCK *L, appBLOCK *R)
+VOID splitNode(LIB_BLOCK A, LIB_BLOCK *L, LIB_BLOCK *R)
 {
 }
 
 LIB_PTABLE CopyTable(LIB_PTABLE T)
 {
     LIB_PTABLE Table = CreateTable();
-    appTRIPLET *elem = (appTRIPLET*)RtlEnumerateGenericTableAvl(T, TRUE);
+    LIB_TRIPLET *elem = (LIB_TRIPLET*)RtlEnumerateGenericTableAvl(T, TRUE);
     
     while (elem != NULL)
     {
         RtlInsertElementGenericTableAvl(Table, elem, sizeof(*elem), NULL);
-        elem = (appTRIPLET*)RtlEnumerateGenericTableAvl(T, FALSE);
+        elem = (LIB_TRIPLET*)RtlEnumerateGenericTableAvl(T, FALSE);
     }
     
     return Table;

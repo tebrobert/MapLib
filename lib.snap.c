@@ -7,7 +7,12 @@ int SnapshotMake()
     if (TableStorage.Count == TableStorage.Capacity) 
         return (int)NULL;
     NewTable = CopyTable(Table);
-    index = appendTable(&TableStorage, NewTable);
+    index = FindEmptySlot(&TableStorage);
+    
+    TableStorage.Data[index] = NewTable;
+    SetBitValue(&SlotBitmask, index, TRUE);
+    TableStorage.Count++;
+    
     k = index + 1;
     return k;
 }
@@ -17,22 +22,53 @@ int SnapshotCount()
     return TableStorage.Count;
 }
 
-BOOLEAN SnapshotLoad(int k)
+int SnapshotLoad(int n)
 {
-    int index = k - 1;
-    if (index >= TableStorage.Count || index < 0) 
-        return FALSE;
+    int index = n - 1;
+    if (index >= TableStorage.Capacity || index < 0) 
+        return -2;
+    if (!GetBitValue(&SlotBitmask, index)) 
+        return -1;
     DeleteTable(Table);
     Table = CopyTable(TableStorage.Data[index]);
-    return TRUE;
+    return n;
 }
 
-VOID SnapshotSave(int k)
+int SnapshotSave(int n)
 {
+    int k, index = n - 1;
+    LIB_PTABLE NewTable;
+    NewTable = CopyTable(Table);
+    
+    if (index >= TableStorage.Capacity || index < 0) 
+        return -2;
+    
+    if (GetBitValue(&SlotBitmask, index))
+    {
+        DeleteTable(TableStorage.Data[index]);
+        TableStorage.Count--;
+    }
+    
+    TableStorage.Data[index] = NewTable;
+    SetBitValue(&SlotBitmask, index, TRUE);
+    TableStorage.Count++;
+    
+    return n;
 }
 
-VOID SnapshotDelete(int k)
+int SnapshotDelete(int n)
 {
+    int index = n - 1;
+    if (index >= TableStorage.Capacity || index < 0) 
+        return -2;
+    if (!GetBitValue(&SlotBitmask, index)) 
+        return -1;
+    
+    DeleteTable(TableStorage.Data[index]);
+    SetBitValue(&SlotBitmask, index, FALSE);
+    TableStorage.Count--;
+    
+    return n;
 }
 
 LIB_PTABLE CreateTable()
@@ -64,17 +100,24 @@ VOID DeleteTableArray(LIB_PTABLE_ARRAY *TA)
     MemoryFree(TA->Data);
 }
 
-int appendTable(LIB_PTABLE_ARRAY *TS, LIB_PTABLE T)
+int FindEmptySlot(LIB_PTABLE_ARRAY *TS)
 {
     int i;
-    // if (TS->Count == TS->Capacity)
-    // {
-        // DeleteTable(T);
-        // return;
-    // }
-    TS->Count++;
-    TS->Data[TS->Count - 1] = T;
-    return TS->Count - 1;
+    
+    for (i = 0; i < TS->Capacity; i++)
+    {
+        if (!GetBitValue(&SlotBitmask, i))
+            break;
+    }
+    
+    if (i == TS->Capacity)
+        return -1;
+    
+    return i;
+    
+    // TS->Count++;
+    // TS->Data[TS->Count - 1] = T;
+    // return TS->Count - 1;
 }
 
 LIB_BITMASK CreateBitmask(int Cap)

@@ -1,21 +1,21 @@
 ﻿#include "lib.a.h"
 
 
-appBLOCK checkNode(appBLOCK A, BOOLEAN *ok){
-    appTRIPLET *P = findNode(A);
+LIB_BLOCK checkNode(LIB_BLOCK A, BOOLEAN *ok){
+    LIB_TRIPLET *P = findNode(A);
     if(P == NULL){
         *ok = FALSE;
-        return (appBLOCK)NULL;
+        return (LIB_BLOCK)NULL;
     }
     *ok = TRUE;
     return P->B + (A - P->A);
 }
 
 // Not finished
-/*appTRIPLET** checkArrNode(appBLOCK A, appNUMBER k){
+/*LIB_TRIPLET** checkArrNode(LIB_BLOCK A, LIB_NUMBER k){
     ULONG       i;
-    appBLOCK    checkPoint;
-    appTRIPLET  PointLeft, PointRight,
+    LIB_BLOCK    checkPoint;
+    LIB_TRIPLET  PointLeft, PointRight,
                 *IterLeft, *IterRight,
                 *EdgeLeft, *EdgeRight,
                 *EdgeInnerLeft, *EdgeInnerRight,
@@ -56,9 +56,9 @@ appBLOCK checkNode(appBLOCK A, BOOLEAN *ok){
     }
     
     //Allocate memory, insert pointers
-    Buffer          = (appTRIPLET**) MemoryAllocate(sizeof(appTRIPLET*) * (i + 3));
-    EdgeInnerLeft   = (appTRIPLET* ) MemoryAllocate(sizeof(appTRIPLET ));
-    EdgeInnerRight  = (appTRIPLET* ) MemoryAllocate(sizeof(appTRIPLET ));
+    Buffer          = (LIB_TRIPLET**) MemoryAllocate(sizeof(LIB_TRIPLET*) * (i + 3));
+    EdgeInnerLeft   = (LIB_TRIPLET* ) MemoryAllocate(sizeof(LIB_TRIPLET ));
+    EdgeInnerRight  = (LIB_TRIPLET* ) MemoryAllocate(sizeof(LIB_TRIPLET ));
     
     //Left Edge
     restart = (PVOID)((char*)(IterLeft) - 0x20);
@@ -137,9 +137,9 @@ appBLOCK checkNode(appBLOCK A, BOOLEAN *ok){
     printf("return Buffer\n\n"); return Buffer;
 }*/
 
-BOOLEAN mapNode(appBLOCK A, appBLOCK B, appNUMBER k){
+BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k){
     BOOLEAN     ok;
-    appTRIPLET  New,
+    LIB_TRIPLET  New,
                 PointLeft, PointRight,
                 *IterLeft, *IterRight,
                 *EdgeLeft, *EdgeRight,
@@ -214,9 +214,9 @@ BOOLEAN mapNode(appBLOCK A, appBLOCK B, appNUMBER k){
     return ok;
 }
 
-BOOLEAN unmapNode(appBLOCK A, appNUMBER k){
+BOOLEAN unmapNode(LIB_BLOCK A, LIB_NUMBER k){
     BOOLEAN ok;
-    mapNode(A, (appBLOCK)NULL, k);
+    mapNode(A, (LIB_BLOCK)NULL, k);
     ok = deleteNode(A);
     return ok;
 }
