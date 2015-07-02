@@ -40,14 +40,14 @@ VOID InitLibrary(BOOLEAN Mode)
     LibraryMode = Mode;
     SlotBitmask = CreateBitmask(SlotCount);
     TableStorage = CreateTableArray(SlotCount);
-    Table = CreateTable();
+    CurrentTable = CreateTable();
     ReadonlyNodes = CreateTable();
     mapNode(0, 0, 10);
 }
 
 VOID DeinitLibrary()
 {
-    DeleteTable(Table);
+    DeleteTable(CurrentTable);
     DeleteTable(ReadonlyNodes);
     DeleteBitmask(&SlotBitmask);
     DeleteTableArray(&TableStorage);

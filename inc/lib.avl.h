@@ -33,20 +33,31 @@ typedef struct
 }
 LIB_PNODE_ARRAY;
 
+typedef struct
+{
+    LIB_NODE *Data;
+    int Count;
+    int Capacity;
+}
+LIB_NODE_ARRAY;
+
 RTL_AVL_COMPARE_ROUTINE     CompareRoutine;
 RTL_AVL_ALLOCATE_ROUTINE    Allocate_Routine;
 RTL_AVL_FREE_ROUTINE        FreeRoutine;
 
-LIB_NODE*     addNode(LIB_NODE T);
+LIB_PNODE       addNode(LIB_NODE T);
 BOOLEAN         existNode(LIB_BLOCK A);
-LIB_NODE*     findNode(LIB_BLOCK A);
+LIB_PNODE       FindNode(LIB_PTABLE, LIB_BLOCK A);
 BOOLEAN         deleteNode(LIB_BLOCK A);
-LIB_NODE*     nextNode(LIB_BLOCK A);
+LIB_PNODE       NextNode(LIB_PTABLE, LIB_BLOCK A);
 
-LIB_PTABLE CopyTable(LIB_PTABLE T);
+LIB_PTABLE      CopyTable(LIB_PTABLE T);
 
-LIB_PNODE_ARRAY CreateNodeArray(int Cap);
-VOID            DeleteNodeArray(LIB_PNODE_ARRAY*);
-VOID            AppendNode(LIB_PNODE_ARRAY*, LIB_PNODE);
+LIB_PNODE_ARRAY CreatePNodeArray(int Cap);
+VOID            DeletePNodeArray(LIB_PNODE_ARRAY*);
+VOID            AppendPNode(LIB_PNODE_ARRAY*, LIB_PNODE);
+LIB_NODE_ARRAY  CreateNodeArray(int Cap);
+VOID            DeleteNodeArray(LIB_NODE_ARRAY*);
+VOID            AppendNode(LIB_NODE_ARRAY*, LIB_NODE);
 
 #endif //_LIB_AVL_H

@@ -37,4 +37,6 @@ VOID                DeleteBitmask(LIB_BITMASK*);
 BOOLEAN             GetBitValue(LIB_BITMASK *Bitmask, int index);
 VOID                SetBitValue(LIB_BITMASK *Bitmask, int index, BOOLEAN value);
 
+LIB_NODE_ARRAY FindAvailable(int amount, LIB_BLOCK limit);
+
 #endif //_LIB_SNAP_H

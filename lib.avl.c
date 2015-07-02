@@ -48,7 +48,7 @@ LIB_NODE* addNode(LIB_NODE T)
 {
     LIB_NODE *ptr;
     BOOLEAN ok;
-    ptr = RtlInsertElementGenericTableAvl(Table, &T, sizeof(T), &ok);
+    ptr = RtlInsertElementGenericTableAvl(CurrentTable, &T, sizeof(T), &ok);
     return ptr;
 }
 
@@ -57,13 +57,13 @@ BOOLEAN existNode(LIB_BLOCK A)
     LIB_NODE T, *P;
     T.A = A;
     T.k = 1;
-    P = (LIB_NODE*)RtlLookupElementGenericTableAvl(Table, &T);
+    P = (LIB_NODE*)RtlLookupElementGenericTableAvl(CurrentTable, &T);
     if (P == NULL)
         return FALSE;
     return TRUE;
 }
 
-LIB_NODE* findNode(LIB_BLOCK A)
+LIB_PNODE FindNode(LIB_PTABLE Table, LIB_BLOCK A)
 {
     LIB_NODE T, *P;
     T.A = A;
@@ -75,16 +75,16 @@ LIB_NODE* findNode(LIB_BLOCK A)
 BOOLEAN deleteNode(LIB_BLOCK A)
 {
     BOOLEAN ok;
-    LIB_NODE *P = findNode(A);
-    ok = RtlDeleteElementGenericTableAvl(Table, P);
+    LIB_NODE *P = FindNode(CurrentTable, A);
+    ok = RtlDeleteElementGenericTableAvl(CurrentTable, P);
     return ok;
 }
 
-LIB_NODE* nextNode(LIB_BLOCK A)
+LIB_PNODE NextNode(LIB_PTABLE Table, LIB_BLOCK A)
 {
     LIB_NODE *ptr, *temp, TempStruct;
     PVOID restart;
-    temp = findNode(A);
+    temp = FindNode(Table, A);
     if (temp != NULL)
     {
         restart = (PVOID)((char*)(temp) - 0x20);
@@ -118,7 +118,7 @@ LIB_PTABLE CopyTable(LIB_PTABLE T)
     return Table;
 }
 
-LIB_PNODE_ARRAY CreateNodeArray(int Cap)
+LIB_PNODE_ARRAY CreatePNodeArray(int Cap)
 {
     LIB_PNODE_ARRAY NodeArray;
     NodeArray.Capacity = Cap;
@@ -127,12 +127,32 @@ LIB_PNODE_ARRAY CreateNodeArray(int Cap)
     return NodeArray;
 }
 
-VOID DeleteNodeArray(LIB_PNODE_ARRAY* NA)
+VOID DeletePNodeArray(LIB_PNODE_ARRAY* NA)
 {
     MemoryFree(NA->Data);
 }
 
-VOID AppendNode(LIB_PNODE_ARRAY* NA, LIB_PNODE Node)
+VOID AppendPNode(LIB_PNODE_ARRAY* NA, LIB_PNODE Node)
+{
+    NA->Data[NA->Count] = Node;
+    NA->Count++;
+}
+
+LIB_NODE_ARRAY CreateNodeArray(int Cap)
+{
+    LIB_NODE_ARRAY NodeArray;
+    NodeArray.Capacity = Cap;
+    NodeArray.Data = (LIB_NODE*)MemoryAllocate(Cap * sizeof(LIB_NODE));
+    NodeArray.Count = 0;
+    return NodeArray;
+}
+
+VOID DeleteNodeArray(LIB_NODE_ARRAY* NA)
+{
+    MemoryFree(NA->Data);
+}
+
+VOID AppendNode(LIB_NODE_ARRAY* NA, LIB_NODE Node)
 {
     NA->Data[NA->Count] = Node;
     NA->Count++;

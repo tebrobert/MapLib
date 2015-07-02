@@ -158,7 +158,7 @@ VOID DoOnCommandCheck(int comC, char **comV)
                     printf("[%d, %d) not mapped!\n", A, A + k);
                 if (i > 0 && (A + k > temp->A + temp->k))
                     printf("[%d, %d) not mapped!\n", temp->A + temp->k, A + k);
-                DeleteNodeArray(&Buffer);
+                DeletePNodeArray(&Buffer);
                 
                 return;
         }
@@ -220,7 +220,7 @@ VOID DoOnCommandPrint(int comC, char **comV)
     }
     
     if (strcmp(comV[1], "L") == 0){
-        printVirtualFile("hard", Table);
+        printVirtualFile("hard", CurrentTable);
         return;
     }
     
@@ -260,7 +260,7 @@ VOID DoOnCommandRead(int comC, char **comV)
         return;
     }
     
-    readVirtualFile(A, k, "hard", Table);
+    readVirtualFile(A, k, "hard", CurrentTable);
 }
 
 VOID DoOnCommandWrite(int comC, char **comV)
@@ -307,12 +307,13 @@ VOID DoOnCommandWrite(int comC, char **comV)
         return;
     }
     
-    writeVirtualFile(A, k, &comV[3], "hard", Table);
+    writeVirtualFile(A, k, &comV[3], "hard", CurrentTable);
 }
 
 void DoOnCommandSnapshot(int comC, char **comV)
 {
     int k;
+    LIB_NODE_ARRAY Buffer;
     
     if (comC < 2 || strcmp(comV[1], "help") == 0)
     {
@@ -436,6 +437,31 @@ void DoOnCommandSnapshot(int comC, char **comV)
         }
         
         printf("Snapshot saved to slot #%d.\n", k);
+        
+        return;
+    }
+    
+    if (strcmp(comV[1], "av") == 0)
+    {
+        if (comC < 3)
+        {
+            printf("Usage: snapshot av [amount]\n");
+            return;
+        }
+            
+        if(!isDec(comV[2]))
+        {
+            printf("Invalid amount format!\n");
+            return;
+        }
+        
+        k = str2dec(comV[2]);
+        Buffer = FindAvailable(k, 61);
+        
+        for (k = 0; k < Buffer.Count; k++)
+        {
+            printf("<%d, %d>\n", Buffer.Data[k].A, Buffer.Data[k].A + Buffer.Data[k].k);
+        }
         
         return;
     }

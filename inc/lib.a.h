@@ -19,7 +19,7 @@ typedef enum
 LIB_MODE;
 
 //GLOBAL
-LIB_PTABLE  Table;
+LIB_PTABLE  CurrentTable;
 LIB_MODE    LibraryMode;
 //end GLOBAL
 
