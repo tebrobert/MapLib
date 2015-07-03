@@ -41,14 +41,14 @@ VOID FreeRoutine
     __in PVOID  Buffer
 )
 {
-    MemoryFree(Buffer);
+    // MemoryFree(Buffer);
 }
 
-LIB_NODE* addNode(LIB_NODE T)
+LIB_PNODE AddNode(LIB_PTABLE Table, LIB_NODE T)
 {
     LIB_NODE *ptr;
     BOOLEAN ok;
-    ptr = RtlInsertElementGenericTableAvl(CurrentTable, &T, sizeof(T), &ok);
+    ptr = RtlInsertElementGenericTableAvl(Table, &T, sizeof(T), &ok);
     return ptr;
 }
 
@@ -72,11 +72,15 @@ LIB_PNODE FindNode(LIB_PTABLE Table, LIB_BLOCK A)
     return P;
 }
 
-BOOLEAN deleteNode(LIB_BLOCK A)
+BOOLEAN DeleteNode(LIB_PTABLE Table, LIB_BLOCK A)
 {
     BOOLEAN ok;
-    LIB_NODE *P = FindNode(CurrentTable, A);
-    ok = RtlDeleteElementGenericTableAvl(CurrentTable, P);
+    LIB_PNODE P;
+    
+    P = FindNode(Table, A);
+    if (P->UsedbyBitmask != NULL)
+        DeleteBitmask(P->UsedbyBitmask);
+    ok = RtlDeleteElementGenericTableAvl(Table, P);
     return ok;
 }
 
@@ -85,30 +89,61 @@ LIB_PNODE NextNode(LIB_PTABLE Table, LIB_BLOCK A)
     LIB_NODE *ptr, *temp, TempStruct;
     PVOID restart;
     temp = FindNode(Table, A);
+    
     if (temp != NULL)
     {
         restart = (PVOID)((char*)(temp) - 0x20);
         ptr = (LIB_NODE*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
         return ptr;
     }
+    
     TempStruct.A = A;
     TempStruct.k = 1;
-    temp = addNode(TempStruct);
+    TempStruct.UsedbyBitmask = NULL;
+    temp = AddNode(Table, TempStruct);
     restart = (PVOID)((char*)(temp) - 0x20);
     ptr = (LIB_NODE*)RtlEnumerateGenericTableWithoutSplayingAvl(Table, &restart);
-    deleteNode(A);
+    DeleteNode(Table, A);
     return ptr;
 }
 
-VOID splitNode(LIB_BLOCK A, LIB_BLOCK *L, LIB_BLOCK *R)
+VOID SplitNode(LIB_PTABLE Table, LIB_PNODE Node, LIB_BLOCK Point)
 {
+    LIB_NODE T1, T2;
+    T1.A = Node->A;
+    T1.B = Node->B;
+    T1.k = Point - T1.A;
+    T2.A = Point;
+    T2.B = T1.B + T1.k;
+    T2.k = Node->k - T1.k;
+    
+    if (Node->UsedbyBitmask != NULL)
+    {
+        T1.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
+        *T1.UsedbyBitmask = CopyBitmask(Node->UsedbyBitmask);
+        T2.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
+        *T2.UsedbyBitmask = CopyBitmask(Node->UsedbyBitmask);
+        DeleteBitmask(Node->UsedbyBitmask);
+    }
+    
+    RtlDeleteElementGenericTableAvl(Table, Node);
+    RtlInsertElementGenericTableAvl(Table, &T1, sizeof(T1), NULL);
+    RtlInsertElementGenericTableAvl(Table, &T2, sizeof(T2), NULL);
+}
+
+LIB_PTABLE CreateTable()
+{
+    LIB_PTABLE Table = (LIB_PTABLE)MemoryAllocate(sizeof(LIB_TABLE));
+    RtlInitializeGenericTableAvl(Table, CompareRoutine, Allocate_Routine, FreeRoutine, NULL);
+    return Table;
 }
 
 LIB_PTABLE CopyTable(LIB_PTABLE T)
 {
     LIB_PTABLE Table = CreateTable();
-    LIB_NODE *elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(T, TRUE);
+    LIB_NODE *elem;
     
+    elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(T, TRUE);
     while (elem != NULL)
     {
         RtlInsertElementGenericTableAvl(Table, elem, sizeof(*elem), NULL);
@@ -116,6 +151,20 @@ LIB_PTABLE CopyTable(LIB_PTABLE T)
     }
     
     return Table;
+}
+
+VOID DeleteTable(LIB_PTABLE Table)
+{
+    LIB_NODE *elem;
+    
+    elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(Table, TRUE);
+    while (elem != NULL)
+    {
+        if (elem->UsedbyBitmask != NULL)
+            DeleteBitmask(elem->UsedbyBitmask);
+        elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(Table, FALSE);
+    }
+    MemoryFree(Table);
 }
 
 LIB_PNODE_ARRAY CreatePNodeArray(int Cap)

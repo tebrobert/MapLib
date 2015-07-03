@@ -45,13 +45,16 @@ RTL_AVL_COMPARE_ROUTINE     CompareRoutine;
 RTL_AVL_ALLOCATE_ROUTINE    Allocate_Routine;
 RTL_AVL_FREE_ROUTINE        FreeRoutine;
 
-LIB_PNODE       addNode(LIB_NODE T);
+LIB_PNODE       AddNode(LIB_PTABLE Table, LIB_NODE T);
 BOOLEAN         existNode(LIB_BLOCK A);
 LIB_PNODE       FindNode(LIB_PTABLE, LIB_BLOCK A);
-BOOLEAN         deleteNode(LIB_BLOCK A);
+BOOLEAN         DeleteNode(LIB_PTABLE Table, LIB_BLOCK A);
 LIB_PNODE       NextNode(LIB_PTABLE, LIB_BLOCK A);
+VOID            SplitNode(LIB_PTABLE, LIB_PNODE, LIB_BLOCK Point);
 
+LIB_PTABLE      CreateTable();
 LIB_PTABLE      CopyTable(LIB_PTABLE T);
+VOID            DeleteTable(LIB_PTABLE Table);
 
 LIB_PNODE_ARRAY CreatePNodeArray(int Cap);
 VOID            DeletePNodeArray(LIB_PNODE_ARRAY*);

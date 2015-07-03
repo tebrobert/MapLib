@@ -22,7 +22,7 @@ int main()
     
     InitLibrary(LibraryMode);
     InitCommandString();
-    
+
     while (!Exit)
     {
         printf(">");

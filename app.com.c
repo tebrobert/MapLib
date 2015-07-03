@@ -124,7 +124,7 @@ VOID DoOnCommandCheck(int comC, char **comV)
                 A = str2dec(comV[1]);
                 k = str2dec(comV[2]);
                 
-                Buffer = checkArrNode(A, k);
+                Buffer = CheckNodeArr(CurrentTable, A, k);
                 I_prev = A;
                 I = A;
                 for (i = 0; i < Buffer.Count; i++)
@@ -462,7 +462,12 @@ void DoOnCommandSnapshot(int comC, char **comV)
         {
             printf("<%d, %d>\n", Buffer.Data[k].A, Buffer.Data[k].A + Buffer.Data[k].k);
         }
-        
+        return;
+    }
+    
+    if (strcmp(comV[1], "rop") == 0)
+    {
+        ROP();
         return;
     }
     
