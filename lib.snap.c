@@ -22,106 +22,20 @@ void ROP()
 int SnapshotMake()
 {
     int i, k, index;
+    LIB_PTABLE NewTable;
     LIB_NODE New;
     LIB_PNODE elem, temp;
-    LIB_PTABLE NewTable;
     LIB_BLOCK I, I_prev;
     LIB_PNODE_ARRAY Buffer;
     
     if (TableStorage.Count == TableStorage.Capacity) 
         return -2;
     
-    NewTable = CopyTable(CurrentTable);
     index = FindEmptySlot(&TableStorage);
-    
-    elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(CurrentTable, TRUE);
-    while (elem != NULL)
-    {
-        //OLD
-        // temp = FindNode(ReadonlyNodes, elem->B);
-        // if (temp == NULL)
-        // {
-            // New.A = elem->B;
-            // New.k = elem->k;
-            // New.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
-            // *New.UsedbyBitmask = CreateBitmask(TableStorage.Capacity);
-            // SetBitValue(New.UsedbyBitmask, index, TRUE);
-            // AddNode(ReadonlyNodes, New);
-            // continue;
-        // }
-        // if (temp->A + temp->k > elem->B + elem->k)
-        // {
-            // SplitNode(ReadonlyNodes, temp, elem->B + elem->k);
-            // temp = FindNode(ReadonlyNodes, elem->B);
-        // }
-        // if (elem->B > temp->A)
-        // {
-            // SplitNode(ReadonlyNodes, temp, elem->B);
-            // temp = FindNode(ReadonlyNodes, elem->B);
-        // }
-        // SetBitValue(temp->UsedbyBitmask, index, TRUE);
-        //end OLD
-        
-        //NEW
-        temp = FindNode(ReadonlyNodes, elem->B);
-        if (temp != NULL && elem->B > temp->A)
-            SplitNode(ReadonlyNodes, temp, elem->B);
-        temp = FindNode(ReadonlyNodes, elem->B + elem->k - 1);  // -1 !
-        if (temp != NULL && elem->B + elem->k < temp->A + temp->k)
-            SplitNode(ReadonlyNodes, temp, elem->B + elem->k);
-        Buffer = CheckNodeArr(ReadonlyNodes, elem->B, elem->k);
-        I = elem->B;
-        I_prev = elem->B;
-        for (i = 0; i < Buffer.Count; i++)
-        {
-            temp = Buffer.Data[i];
-            if (I_prev < temp->A)
-            {
-                //printf("[%d, %d) not mapped!\n", I_prev, temp->A);
-                New.A = I_prev;
-                New.k = temp->A - I_prev;
-                New.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
-                *New.UsedbyBitmask = CreateBitmask(SlotBitmask.Capacity);
-                SetBitValue(New.UsedbyBitmask, index, TRUE);
-                AddNode(ReadonlyNodes, New);
-                I = temp->A;
-            }
-            // printf("[%d, %d) -> [%d, %d)\n", temp->A, temp->A + temp->k, temp->B, temp->B + temp->k);
-            SetBitValue(temp->UsedbyBitmask, index, TRUE);
-            I_prev = temp->A + temp->k;
-        }
-        if (Buffer.Count == 0)
-        {
-            //printf("[%d, %d) not mapped!\n", elem->B, elem->B + elem->k);
-            New.A = elem->B;
-            New.k = elem->k;
-            New.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
-            *New.UsedbyBitmask = CreateBitmask(SlotBitmask.Capacity);
-            SetBitValue(New.UsedbyBitmask, index, TRUE);
-            AddNode(ReadonlyNodes, New);
-        }
-        if (i > 0 && (elem->B + elem->k > temp->A + temp->k))
-        {
-            //printf("[%d, %d) not mapped!\n", temp->A + temp->k, elem->B + elem->k);
-            New.A = temp->A + temp->k;
-            New.k = (elem->B + elem->k) - (temp->A + temp->k);
-            New.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
-            *New.UsedbyBitmask = CreateBitmask(SlotBitmask.Capacity);
-            SetBitValue(New.UsedbyBitmask, index, TRUE);
-            AddNode(ReadonlyNodes, New);
-        }
-        DeletePNodeArray(&Buffer);
-        
-        //end NEW
-        
-        elem = (LIB_PNODE)RtlEnumerateGenericTableAvl(CurrentTable, FALSE);
-    }
-    
-    TableStorage.Data[index] = NewTable;
-    SetBitValue(&SlotBitmask, index, TRUE);
-    TableStorage.Count++;
-    
     k = index + 1;
+    
+    SnapshotSave(k);
+    
     return k;
 }
 
@@ -144,17 +58,71 @@ int SnapshotLoad(int n)
 
 int SnapshotSave(int n)
 {
-    int k, index = n - 1;
+    int i, k, index;
     LIB_PTABLE NewTable;
-    NewTable = CopyTable(CurrentTable);
+    LIB_NODE New;
+    LIB_PNODE elem, temp;
+    LIB_BLOCK I, I_prev;
+    LIB_PNODE_ARRAY Buffer;
     
+    index = n - 1;
     if (index >= TableStorage.Capacity || index < 0) 
         return -2;
     
+    NewTable = CopyTable(CurrentTable);
+    
     if (GetBitValue(&SlotBitmask, index))
+        SnapshotDelete(n);
+    
+    elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(CurrentTable, TRUE);
+    while (elem != NULL)
     {
-        DeleteTable(TableStorage.Data[index]);
-        TableStorage.Count--;
+        temp = FindNode(ReadonlyNodes, elem->B);
+        if (temp != NULL && elem->B > temp->A)
+            SplitNode(ReadonlyNodes, temp, elem->B);
+        temp = FindNode(ReadonlyNodes, elem->B + elem->k - 1);  // -1 !
+        if (temp != NULL && elem->B + elem->k < temp->A + temp->k)
+            SplitNode(ReadonlyNodes, temp, elem->B + elem->k);
+        Buffer = CheckNodeArr(ReadonlyNodes, elem->B, elem->k);
+        I = elem->B;
+        I_prev = elem->B;
+        for (i = 0; i < Buffer.Count; i++)
+        {
+            temp = Buffer.Data[i];
+            if (I_prev < temp->A)
+            {
+                New.A = I_prev;
+                New.k = temp->A - I_prev;
+                New.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
+                *New.UsedbyBitmask = CreateBitmask(SlotBitmask.Capacity);
+                SetBitValue(New.UsedbyBitmask, index, TRUE);
+                AddNode(ReadonlyNodes, New);
+                I = temp->A;
+            }
+            SetBitValue(temp->UsedbyBitmask, index, TRUE);
+            I_prev = temp->A + temp->k;
+        }
+        if (Buffer.Count == 0)
+        {
+            New.A = elem->B;
+            New.k = elem->k;
+            New.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
+            *New.UsedbyBitmask = CreateBitmask(SlotBitmask.Capacity);
+            SetBitValue(New.UsedbyBitmask, index, TRUE);
+            AddNode(ReadonlyNodes, New);
+        }
+        if (i > 0 && (elem->B + elem->k > temp->A + temp->k))
+        {
+            New.A = temp->A + temp->k;
+            New.k = (elem->B + elem->k) - (temp->A + temp->k);
+            New.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
+            *New.UsedbyBitmask = CreateBitmask(SlotBitmask.Capacity);
+            SetBitValue(New.UsedbyBitmask, index, TRUE);
+            AddNode(ReadonlyNodes, New);
+        }
+        DeletePNodeArray(&Buffer);
+        
+        elem = (LIB_PNODE)RtlEnumerateGenericTableAvl(CurrentTable, FALSE);
     }
     
     TableStorage.Data[index] = NewTable;
