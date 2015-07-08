@@ -1,6 +1,5 @@
 ﻿#include "lib.a.h"
 
-
 LIB_BLOCK checkNode(LIB_BLOCK A, BOOLEAN *ok){
     LIB_NODE *P = FindNode(CurrentTable, A);
     if(P == NULL)

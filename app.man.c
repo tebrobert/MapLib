@@ -10,6 +10,26 @@ void printTriplet(LIB_NODE* I)
     );
 }
 
+ULONG GetFileSize(const char *fileName)
+{
+    ULONG fileSize;
+    FILE *filePtr;
+    
+    filePtr = fopen(fileName, "r+b");
+    
+    if(filePtr == NULL)
+    {
+        printf("Can't open file!\n\n");
+        return (ULONG)NULL;
+    }
+    
+    fseek(filePtr, 0, SEEK_END);
+    fileSize = ftell(filePtr);
+    rewind(filePtr);
+    
+    return fileSize;
+}
+
 char readByte(const char *fileName, LIB_BLOCK A, BOOLEAN *ok)
 {
     //Start vars
@@ -100,7 +120,8 @@ void writeByte(const char *fileName, LIB_BLOCK A, char Byte, BOOLEAN *ok)
 }
 
 
-void printFile(const char *fileNeme){
+void printFile(const char *fileNeme)
+{
     //Start vars
     ULONG i, fileSize;
     void *buffer;
@@ -110,13 +131,15 @@ void printFile(const char *fileNeme){
     
     //Open file
     filePtr = fopen(fileNeme, "r+b");
-    if(filePtr == NULL){
+    if (filePtr == NULL)
+    {
         printf("Can't open file!\n\n");
         return;
     }
     fseek(filePtr , 0, SEEK_END);
     fileSize = ftell(filePtr);
-    if(fileSize == -1){
+    if (fileSize == -1)
+    {
         printf("Can't detect file size!\n\n");
         return;
     }
@@ -124,7 +147,8 @@ void printFile(const char *fileNeme){
     
     //Allocate memory for file
     buffer = malloc(sizeof(char)*fileSize);
-    if(buffer == NULL){
+    if (buffer == NULL)
+    {
         printf("Can't allocate memory for file!\n\n");
         return;
     }
@@ -242,7 +266,7 @@ void printVirtualFile(const char *fileName, LIB_PTABLE Table)
     char *S, Byte;
     LIB_BLOCK B;
     BOOLEAN ok;
-    int fileSize = 10;
+    int fileSize = LogicalFileSize;
     
     //Print file
     printf("virtual is %lld bytes:\n", fileSize);
@@ -282,7 +306,7 @@ readVirtualFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName, LIB_PTABLE Tabl
     char *S, Byte;
     LIB_BLOCK B;
     BOOLEAN ok;
-    int fileSize = 10;
+    int fileSize = LogicalFileSize;
     
     //Read file
     for(i = 0; i < k; i++)
@@ -306,7 +330,7 @@ readVirtualFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName, LIB_PTABLE Tabl
 void writeVirtualFile(LIB_BLOCK A, LIB_NUMBER k, char **Bytes, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
-    ULONG i, fileSize = 10;
+    ULONG i, fileSize = LogicalFileSize;
     char *S, Byte;
     LIB_BLOCK B;
     BOOLEAN ok;

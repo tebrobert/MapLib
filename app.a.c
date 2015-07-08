@@ -4,8 +4,7 @@ int main()
 {
     int i, j;
     char c;
-    BOOLEAN Exit = FALSE;
-    LIB_MODE LibraryMode = USER_MODE;
+    BOOLEAN Exit;
     APP_COMMAND FirstCommand;
     VOID (*DoOnCommand[])(int, char**) =
     {
@@ -19,10 +18,20 @@ int main()
         DoOnCommandWrite,
         DoOnCommandSnapshot,
     };
+    LIB_MODE _LibraryMode;
+    ULONG _LogicalFileSize, _PhysicalFileSize;
+    int _MaxSlotCount;
     
-    InitLibrary(LibraryMode);
+    HardFileName = "hard";
+    _LibraryMode = USER_MODE;
+    _LogicalFileSize = 10;
+    _PhysicalFileSize = GetFileSize(HardFileName);
+    _MaxSlotCount = 10;
+    InitLibrary(_LibraryMode, _LogicalFileSize, _PhysicalFileSize, _MaxSlotCount);
+    
     InitCommandString();
-
+    
+    Exit = FALSE;
     while (!Exit)
     {
         printf(">");

@@ -1,9 +1,7 @@
 ﻿#ifndef _LIB_SNAP_H
 #define _LIB_SNAP_H
 
-#include <ntddk.h>
-
-#include "lib.avl.h"
+#include "lib.a.h"
 
 typedef struct
 {
@@ -19,7 +17,6 @@ LIB_PTABLE ReadonlyNodes;
 LIB_BITMASK SlotBitmask;
 //end GLOBAL
 
-void ROP();
 int SnapshotCount();
 int SnapshotMake();
 int SnapshotLoad(int n);

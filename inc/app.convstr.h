@@ -1,7 +1,7 @@
 #ifndef _APP_CONVSTR_H
 #define _APP_CONVSTR_H
 
-#include <ntddk.h>
+#include "app.a.h"
 
 BOOLEAN isDec(char *S);
 BOOLEAN isHex(char *S);

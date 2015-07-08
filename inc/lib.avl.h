@@ -1,7 +1,7 @@
 ﻿#ifndef _LIB_AVL_H
 #define _LIB_AVL_H
 
-#include <ntddk.h>
+#include "lib.a.h"
 
 typedef unsigned int LIB_BLOCK;
 typedef unsigned int LIB_NUMBER;

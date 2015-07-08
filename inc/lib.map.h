@@ -1,9 +1,7 @@
 ﻿#ifndef _LIB_MAP_H
 #define _LIB_MAP_H
 
-#include <ntddk.h>
-
-#include "lib.avl.h"
+#include "lib.a.h"
 
 LIB_BLOCK       checkNode(LIB_BLOCK A, BOOLEAN *ok);
 LIB_PNODE_ARRAY CheckNodeArr(LIB_PTABLE Table, LIB_BLOCK A, LIB_NUMBER k);

@@ -34,15 +34,16 @@ PVOID MemoryReallocate(PVOID Buffer, int NumberOfBytes)
     return temp;
 }
 
-VOID InitLibrary(BOOLEAN Mode)
+VOID InitLibrary(BOOLEAN _LibraryMode, ULONG _LogicalFileSize, ULONG _PhysicalFileSize, int _MaxSlotCount)
 {
-    int SlotCount = 20;
-    LibraryMode = Mode;
-    SlotBitmask = CreateBitmask(SlotCount);
-    TableStorage = CreateTableArray(SlotCount);
+    LibraryMode = _LibraryMode;
+    LogicalFileSize = _LogicalFileSize;
+    PhysicalFileSize = _PhysicalFileSize;
+    SlotBitmask = CreateBitmask(_MaxSlotCount);
+    TableStorage = CreateTableArray(_MaxSlotCount);
     CurrentTable = CreateTable();
     ReadonlyNodes = CreateTable();
-    mapNode(0, 0, 10);
+    mapNode(0, 0, LogicalFileSize);
 }
 
 VOID DeinitLibrary()

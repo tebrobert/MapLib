@@ -1,24 +1,5 @@
 ﻿#include "lib.a.h"
 
-void ROP()
-{
-    int i;
-    LIB_PNODE elem;
-    
-    elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(ReadonlyNodes, TRUE);
-    while (elem != NULL)
-    {
-        printf("<%d, %d> :", elem->A, elem->A + elem->k);
-        for (i = 0; i < elem->UsedbyBitmask->Capacity; i++)
-        {
-            if (GetBitValue(elem->UsedbyBitmask, i))
-                printf(" #%d", i + 1);
-        }
-        printf("\n");
-        elem = (LIB_PNODE)RtlEnumerateGenericTableAvl(ReadonlyNodes, FALSE);
-    }
-}
-
 int SnapshotMake()
 {
     int i, k, index;
@@ -260,7 +241,7 @@ VOID SetBitValue(LIB_BITMASK *Bitmask, int index, BOOLEAN value)
     int order = index / 8;
     int offset = index % 8;
     char mask = 1 << offset;
-
+    
     if (value)
     {
         Bitmask->Data[order] |= mask;
@@ -341,4 +322,13 @@ LIB_NODE_ARRAY FindAvailable(int amount, LIB_BLOCK limit)
     }
     
     return Buffer;
+}
+
+VOID PrepareToWrite(LIB_BLOCK A, LIB_BLOCK k)
+{
+    LIB_BLOCK B;
+    LIB_PNODE_ARRAY Buffer;
+    
+    B = checkNode(A, NULL);
+    Buffer = CheckNodeArr(CurrentTable, B, k);
 }

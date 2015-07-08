@@ -215,12 +215,12 @@ VOID DoOnCommandPrint(int comC, char **comV)
     }
     
     if (strcmp(comV[1], "H") == 0){
-        printFile("hard");
+        printFile(HardFileName);
         return;
     }
     
     if (strcmp(comV[1], "L") == 0){
-        printVirtualFile("hard", CurrentTable);
+        printVirtualFile(HardFileName, CurrentTable);
         return;
     }
     
@@ -231,7 +231,7 @@ VOID DoOnCommandRead(int comC, char **comV)
 {
     int k;
     LIB_BLOCK A;
-    BOOLEAN ModeHard = FALSE;
+    BOOLEAN ModeHard;
     
     if(comC != 4 || strcmp(comV[1], "help") == 0){
         printf("Usage: read [disk] [block] [amount]\n");
@@ -240,6 +240,8 @@ VOID DoOnCommandRead(int comC, char **comV)
     
     if (strcmp(comV[1], "H") == 0)
         ModeHard = TRUE;
+    else
+        ModeHard = FALSE;
     
     if(!ModeHard && strcmp(comV[1], "L") != 0){
         printf("Invalid disk format (use L or H)\n");
@@ -256,18 +258,18 @@ VOID DoOnCommandRead(int comC, char **comV)
     
     if (ModeHard)
     {
-        readFile(A, k, "hard");
+        readFile(A, k, HardFileName);
         return;
     }
     
-    readVirtualFile(A, k, "hard", CurrentTable);
+    readVirtualFile(A, k, HardFileName, CurrentTable);
 }
 
 VOID DoOnCommandWrite(int comC, char **comV)
 {
     int k, i;
     LIB_BLOCK A;
-    BOOLEAN DataIsCorrect = TRUE, ModeHard = FALSE;
+    BOOLEAN DataIsCorrect, ModeHard;
     
     if(comC < 4 || strcmp(comV[1], "help") == 0){
         printf("Usage: write [disk] [block] [byte 1] ... [byte N]\n");
@@ -276,6 +278,8 @@ VOID DoOnCommandWrite(int comC, char **comV)
     
     if(strcmp(comV[1], "H") == 0)
         ModeHard = TRUE;
+    else
+        ModeHard = FALSE;
     
     if(!ModeHard && strcmp(comV[1], "L") != 0){
         printf("Invalid disk format\n");
@@ -287,13 +291,15 @@ VOID DoOnCommandWrite(int comC, char **comV)
         return;
     }
     
-    for(i = 3; DataIsCorrect && i < comC; i++)
+    DataIsCorrect = TRUE;
+    for (i = 3; DataIsCorrect && i < comC; i++)
     {
         if(!isHex(comV[i]))
             DataIsCorrect = FALSE;
     }
     
-    if(!DataIsCorrect){
+    if (!DataIsCorrect)
+    {
         printf("Invalid byte format\n");
         return;
     }
@@ -301,18 +307,19 @@ VOID DoOnCommandWrite(int comC, char **comV)
     A = str2dec(comV[2]);
     k = comC - 3;
     
-    if(ModeHard)
+    if (ModeHard)
     {
-        writeFile(A, k, &comV[3], "hard");
+        writeFile(A, k, &comV[3], HardFileName);
         return;
     }
     
-    writeVirtualFile(A, k, &comV[3], "hard", CurrentTable);
+    writeVirtualFile(A, k, &comV[3], HardFileName, CurrentTable);
 }
 
 void DoOnCommandSnapshot(int comC, char **comV)
 {
     int k;
+    LIB_PNODE elem;
     LIB_NODE_ARRAY Buffer;
     
     if (comC < 2 || strcmp(comV[1], "help") == 0)
@@ -456,7 +463,7 @@ void DoOnCommandSnapshot(int comC, char **comV)
         }
         
         k = str2dec(comV[2]);
-        Buffer = FindAvailable(k, 61);
+        Buffer = FindAvailable(k, PhysicalFileSize);
         
         for (k = 0; k < Buffer.Count; k++)
         {
@@ -467,7 +474,18 @@ void DoOnCommandSnapshot(int comC, char **comV)
     
     if (strcmp(comV[1], "rop") == 0)
     {
-        ROP();
+        elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(ReadonlyNodes, TRUE);
+        while (elem != NULL)
+        {
+            printf("<%d, %d> :", elem->A, elem->A + elem->k);
+            for (k = 0; k < elem->UsedbyBitmask->Capacity; k++)
+            {
+                if (GetBitValue(elem->UsedbyBitmask, k))
+                    printf(" #%d", k + 1);
+            }
+            printf("\n");
+            elem = (LIB_PNODE)RtlEnumerateGenericTableAvl(ReadonlyNodes, FALSE);
+        }
         return;
     }
     

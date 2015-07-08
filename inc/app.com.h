@@ -1,7 +1,7 @@
 #ifndef _APP_COM_H
 #define _APP_COM_H
 
-#include <ntddk.h>
+#include "app.a.h"
 
 typedef struct
 {
@@ -31,7 +31,9 @@ typedef enum
 }
 APP_COMMAND;
 
+//GLOBAL
 APP_COMMAND_STRING CommandString;
+//end GLOBAL
 
 VOID InitCommandString();
 VOID DeinitCommandString();

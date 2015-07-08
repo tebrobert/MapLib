@@ -1,9 +1,15 @@
 ﻿#ifndef _APP_MAN_H
 #define _APP_MAN_H
 
+#include "app.a.h"
+
+//GLOBAL
+char *HardFileName;
+//end GLOBAL
 
 void printTriplet(LIB_NODE* I);
 
+ULONG GetFileSize(const char *fileName);
 char readByte(const char *fileName, LIB_BLOCK A, BOOLEAN *ok);
 void writeByte(const char *fileName, LIB_BLOCK A, char Byte, BOOLEAN *ok);
 
