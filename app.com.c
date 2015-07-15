@@ -124,7 +124,7 @@ VOID DoOnCommandCheck(int comC, char **comV)
                 A = str2dec(comV[1]);
                 k = str2dec(comV[2]);
                 
-                Buffer = CheckNodeArr(CurrentTable, A, k);
+                Buffer = CheckInterval(CurrentTable, A, k);
                 I_prev = A;
                 I = A;
                 for (i = 0; i < Buffer.Count; i++)
@@ -319,6 +319,8 @@ VOID DoOnCommandWrite(int comC, char **comV)
 void DoOnCommandSnapshot(int comC, char **comV)
 {
     int k;
+    LIB_BLOCK A;
+    BOOLEAN ok;
     LIB_PNODE elem;
     LIB_NODE_ARRAY Buffer;
     
@@ -334,7 +336,7 @@ void DoOnCommandSnapshot(int comC, char **comV)
     
     if (strcmp(comV[1], "count") == 0)
     {
-        printf("%d\n", SnapshotCount());
+        printf("%d/%d  snapshots recorded.\n", SnapshotCount(), SnapshotCapacity());
         return;
     }
     
@@ -367,7 +369,7 @@ void DoOnCommandSnapshot(int comC, char **comV)
         }
         
         k = str2dec(comV[2]);
-        k = SnapshotLoad(k);
+        SnapshotLoad(k);
         
         if (k == -1)
         {
@@ -478,14 +480,47 @@ void DoOnCommandSnapshot(int comC, char **comV)
         while (elem != NULL)
         {
             printf("<%d, %d> :", elem->A, elem->A + elem->k);
-            for (k = 0; k < elem->UsedbyBitmask->Capacity; k++)
+            for (k = 0; k < elem->UsedBy->Capacity; k++)
             {
-                if (GetBitValue(elem->UsedbyBitmask, k))
-                    printf(" #%d", k + 1);
+                if (GetBitValue(elem->UsedBy, k))
+                    printf(" #%d", k);
             }
             printf("\n");
             elem = (LIB_PNODE)RtlEnumerateGenericTableAvl(ReadonlyNodes, FALSE);
         }
+        return;
+    }
+    
+    if (strcmp(comV[1], "p") == 0)
+    {
+        if (comC < 4)
+        {
+            printf("Usage: snapshot p [block] [length]\n");
+            return;
+        }
+        
+        if(!isDec(comV[2]))
+        {
+            printf("Invalid block format!\n");
+            return;
+        }
+        
+        if(!isDec(comV[3]))
+        {
+            printf("Invalid length format!\n");
+            return;
+        }
+        
+        A = str2dec(comV[2]);
+        k = str2dec(comV[3]);
+        
+        ok = PrepareToWrite(A, k);
+        
+        if (ok)
+            printf("Redirected.\n");
+        else
+            printf("Unable to redirect! Not enough available space.\n");
+        
         return;
     }
     

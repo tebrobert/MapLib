@@ -266,7 +266,7 @@ void printVirtualFile(const char *fileName, LIB_PTABLE Table)
     char *S, Byte;
     LIB_BLOCK B;
     BOOLEAN ok;
-    int fileSize = LogicalFileSize;
+    int fileSize = VirtualFileSize;
     
     //Print file
     printf("virtual is %lld bytes:\n", fileSize);
@@ -306,7 +306,7 @@ readVirtualFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName, LIB_PTABLE Tabl
     char *S, Byte;
     LIB_BLOCK B;
     BOOLEAN ok;
-    int fileSize = LogicalFileSize;
+    int fileSize = VirtualFileSize;
     
     //Read file
     for(i = 0; i < k; i++)
@@ -330,7 +330,7 @@ readVirtualFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName, LIB_PTABLE Tabl
 void writeVirtualFile(LIB_BLOCK A, LIB_NUMBER k, char **Bytes, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
-    ULONG i, fileSize = LogicalFileSize;
+    ULONG i, fileSize = VirtualFileSize;
     char *S, Byte;
     LIB_BLOCK B;
     BOOLEAN ok;

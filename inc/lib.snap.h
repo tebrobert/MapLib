@@ -3,36 +3,20 @@
 
 #include "lib.a.h"
 
-typedef struct
-{
-    LIB_PTABLE *Data;
-    int Count;
-    int Capacity;
-}
-LIB_PTABLE_ARRAY;
-
 //GLOBAL
 LIB_PTABLE_ARRAY TableStorage;
 LIB_PTABLE ReadonlyNodes;
-LIB_BITMASK SlotBitmask;
 //end GLOBAL
 
 int SnapshotCount();
+int SnapshotCapacity();
 int SnapshotMake();
 int SnapshotLoad(int n);
 int SnapshotSave(int n);
 int SnapshotDelete(int n);
 
-LIB_PTABLE_ARRAY    CreateTableArray(int Cap);
-VOID                DeleteTableArray(LIB_PTABLE_ARRAY*);
-int                 FindEmptySlot(LIB_PTABLE_ARRAY *TS);
-
-LIB_BITMASK         CreateBitmask(int Cap);
-LIB_BITMASK         CopyBitmask(LIB_BITMASK *BM);
-VOID                DeleteBitmask(LIB_BITMASK*);
-BOOLEAN             GetBitValue(LIB_BITMASK *Bitmask, int index);
-VOID                SetBitValue(LIB_BITMASK *Bitmask, int index, BOOLEAN value);
-
-LIB_NODE_ARRAY      FindAvailable(int amount, LIB_BLOCK limit);
+int             FindEmptySlot(LIB_PTABLE_ARRAY *TS);
+LIB_NODE_ARRAY  FindAvailable(int amount, LIB_BLOCK limit);
+BOOLEAN         PrepareToWrite(LIB_BLOCK A, LIB_BLOCK k);
 
 #endif //_LIB_SNAP_H

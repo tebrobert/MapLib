@@ -2,10 +2,6 @@
 
 int main()
 {
-    int i, j;
-    char c;
-    BOOLEAN Exit;
-    APP_COMMAND FirstCommand;
     VOID (*DoOnCommand[])(int, char**) =
     {
         DoOnCommandHelp,
@@ -18,16 +14,20 @@ int main()
         DoOnCommandWrite,
         DoOnCommandSnapshot,
     };
+    BOOLEAN Exit;
+    APP_COMMAND FirstCommand;
     LIB_MODE _LibraryMode;
-    ULONG _LogicalFileSize, _PhysicalFileSize;
+    ULONG _VirtualFileSize, _PhysicalFileSize;
     int _MaxSlotCount;
     
     HardFileName = "hard";
+    
+    //_LogicalFileSize and _MaxSlotCount are random
     _LibraryMode = USER_MODE;
-    _LogicalFileSize = 10;
     _PhysicalFileSize = GetFileSize(HardFileName);
+    _VirtualFileSize = 10;
     _MaxSlotCount = 10;
-    InitLibrary(_LibraryMode, _LogicalFileSize, _PhysicalFileSize, _MaxSlotCount);
+    InitLibrary(_LibraryMode, _VirtualFileSize, _PhysicalFileSize, _MaxSlotCount);
     
     InitCommandString();
     
@@ -65,41 +65,3 @@ int main()
     
     return 0;
 }
-
-/*
- *  default mapping [0 10) [0 10)
- *  
- *  snapshot make                   L[1]: [0 10)
- *  
- *  read
- *  write [10 15]
- *  
- *  snapshot make                   L[2]: [0 15)
- *  
- */
-
-
-/*
- *  
- *  L[0]: avl[(...........)]
- *  L[1]: avl[(.)..........]
- *  L[2]: avl[(.)(.).......]
- *  L[3]: avl[(.)(.).......]
- *  
- *  H:    avl[(.)(.)(.....)............(.)(.)..(.)(.)............]
- *             0  0  0                  1  2    3  3
- *                1  1                  2
- *                   2
- *                   3
- *  
- *  
- *  L[0]: avl[(...........)]
- *  L[3]: avl[(.)(.).......]
- *  
- *  H:    avl[(.)(.)(.....)............(.)(.)..(.)(.)............]
- *             0  0  0                          3  3
- *                   3                   
- *                    
- *                    
- *  
- */

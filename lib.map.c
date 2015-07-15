@@ -11,7 +11,7 @@ LIB_BLOCK checkNode(LIB_BLOCK A, BOOLEAN *ok){
     return P->B + (A - P->A);
 }
 
-LIB_PNODE_ARRAY CheckNodeArr(LIB_PTABLE Table, LIB_BLOCK A, LIB_NUMBER k)
+LIB_PNODE_ARRAY CheckInterval(LIB_PTABLE Table, LIB_BLOCK A, LIB_NUMBER k)
 {
     int i;
     LIB_PNODE ptr;
@@ -80,11 +80,11 @@ BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k)
         EdgeOuterLeft.A = EdgeLeft->A;
         EdgeOuterLeft.B = EdgeLeft->B;
         EdgeOuterLeft.k = PointLeft - EdgeLeft->A;
-        EdgeOuterLeft.UsedbyBitmask = NULL;
-        if (EdgeLeft->UsedbyBitmask != NULL)
+        EdgeOuterLeft.UsedBy = NULL;
+        if (EdgeLeft->UsedBy != NULL)
         {
-            EdgeOuterLeft.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
-            *EdgeOuterLeft.UsedbyBitmask = CopyBitmask(EdgeLeft->UsedbyBitmask);
+            EdgeOuterLeft.UsedBy = MemoryAllocate(sizeof(LIB_BITMASK));
+            *EdgeOuterLeft.UsedBy = CopyBitmask(EdgeLeft->UsedBy);
         }
     }
     
@@ -93,11 +93,11 @@ BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k)
         EdgeOuterRight.A = PointRight;
         EdgeOuterRight.B = EdgeRight->B + (PointRight - EdgeRight->A);
         EdgeOuterRight.k = (EdgeRight->A + EdgeRight->k) - PointRight;
-        EdgeOuterRight.UsedbyBitmask = NULL;
-        if (EdgeRight->UsedbyBitmask != NULL)
+        EdgeOuterRight.UsedBy = NULL;
+        if (EdgeRight->UsedBy != NULL)
         {
-            EdgeOuterRight.UsedbyBitmask = MemoryAllocate(sizeof(LIB_BITMASK));
-            *EdgeOuterRight.UsedbyBitmask = CopyBitmask(EdgeRight->UsedbyBitmask);
+            EdgeOuterRight.UsedBy = MemoryAllocate(sizeof(LIB_BITMASK));
+            *EdgeOuterRight.UsedBy = CopyBitmask(EdgeRight->UsedBy);
         }
     }
 
@@ -114,7 +114,7 @@ BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k)
     New.A = A;
     New.B = B;
     New.k = k;
-    New.UsedbyBitmask = NULL;
+    New.UsedBy = NULL;
     AddNode(CurrentTable, New);
     //RtlInsertElementGenericTableAvl(CurrentTable, &New, sizeof(New), &ok);
 

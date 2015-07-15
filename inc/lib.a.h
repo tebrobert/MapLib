@@ -17,11 +17,10 @@ typedef enum
 LIB_MODE;
 
 //GLOBAL
-ULONG       LogicalFileSize;
-ULONG       PhysicalFileSize;
-//char*       PhysicalFileName;
-LIB_PTABLE  CurrentTable;
-LIB_MODE    LibraryMode;
+ULONG VirtualFileSize;
+ULONG PhysicalFileSize;
+LIB_PTABLE CurrentTable;
+LIB_MODE LibraryMode;
 //end GLOBAL
 
 PVOID   MemoryAllocate(int NumberOfBytes);
