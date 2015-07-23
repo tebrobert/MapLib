@@ -175,7 +175,7 @@ void printFile(const char *fileNeme)
     fclose(filePtr);
 }
 
-void readFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName)
+void readFile(LIB_BLOCK A, LIB_BLOCK k, const char *fileName)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -214,7 +214,7 @@ void readFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName)
     fclose(filePtr);
 }
 
-void writeFile(LIB_BLOCK A, LIB_NUMBER k, char **Bytes, const char *fileName)
+void writeFile(LIB_BLOCK A, LIB_BLOCK k, char **Bytes, const char *fileName)
 {
     FILE    *filePtr;
     ULONG   i, fileSize;
@@ -299,7 +299,7 @@ void printVirtualFile(const char *fileName, LIB_PTABLE Table)
 }
 
 void
-readVirtualFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName, LIB_PTABLE Table)
+readVirtualFile(LIB_BLOCK A, LIB_BLOCK k, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
     ULONG i;
@@ -327,7 +327,7 @@ readVirtualFile(LIB_BLOCK A, LIB_NUMBER k, const char *fileName, LIB_PTABLE Tabl
     printf("\n");
 }
 
-void writeVirtualFile(LIB_BLOCK A, LIB_NUMBER k, char **Bytes, const char *fileName, LIB_PTABLE Table)
+void writeVirtualFile(LIB_BLOCK A, LIB_BLOCK k, char **Bytes, const char *fileName, LIB_PTABLE Table)
 {
     //Start vars
     ULONG i, fileSize = VirtualFileSize;

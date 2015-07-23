@@ -11,7 +11,7 @@ LIB_BLOCK checkNode(LIB_BLOCK A, BOOLEAN *ok){
     return P->B + (A - P->A);
 }
 
-LIB_PNODE_ARRAY CheckInterval(LIB_PTABLE Table, LIB_BLOCK A, LIB_NUMBER k)
+LIB_PNODE_ARRAY CheckInterval(LIB_PTABLE Table, LIB_BLOCK A, LIB_BLOCK k)
 {
     int i;
     LIB_PNODE ptr;
@@ -41,7 +41,7 @@ LIB_PNODE_ARRAY CheckInterval(LIB_PTABLE Table, LIB_BLOCK A, LIB_NUMBER k)
     return Buffer;
 }
 
-BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k)
+BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_BLOCK k)
 {
     BOOLEAN     ok;
     LIB_NODE    New, EdgeOuterLeft, EdgeOuterRight;
@@ -128,7 +128,8 @@ BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_NUMBER k)
     return TRUE;
 }
 
-BOOLEAN unmapNode(LIB_BLOCK A, LIB_NUMBER k){
+BOOLEAN unmapNode(LIB_BLOCK A, LIB_BLOCK k)
+{
     BOOLEAN ok;
     mapNode(A, (LIB_BLOCK)NULL, k);
     ok = DeleteNode(CurrentTable, A);

@@ -4,7 +4,6 @@
 #include "lib.a.h"
 
 typedef unsigned int LIB_BLOCK;
-typedef unsigned int LIB_NUMBER;
 typedef RTL_AVL_TABLE LIB_TABLE;
 typedef PRTL_AVL_TABLE LIB_PTABLE;
 
@@ -29,7 +28,7 @@ typedef struct
 {
     LIB_BLOCK A;
     LIB_BLOCK B;
-    LIB_NUMBER k;
+    LIB_BLOCK k;
     LIB_BITMASK *UsedBy;
 }
 LIB_NODE, *LIB_PNODE;

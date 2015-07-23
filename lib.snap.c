@@ -110,6 +110,14 @@ int SnapshotZeroSave(int n)
     return n;
 }
 
+/*
+        [                    ]                                                
+        [    ]     [      ]       [       ]                                      
+                                                                            
+                                                                            
+                                                                            
+*/
+
 int SnapshotSave(int n)
 {
     if (n == 0)
@@ -300,3 +308,192 @@ BOOLEAN PrepareToWrite(LIB_BLOCK A, LIB_BLOCK k)
     
     return TRUE;
 }
+
+BOOLEAN IsInBorders(LIB_BLOCK Left, LIB_BLOCK Right, LIB_BLOCK Point)
+{
+    return (Point >= Left && Point < Right);
+}
+
+BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
+{
+    LIB_PNODE_ARRAY Buffer, Reserved;
+    LIB_NODE_ARRAY Available;
+    BOOLEAN IsReserved;
+    int i, j, w, CurrentAvailableIndex;
+    LIB_BLOCK ToRedirect, FirstLeftVoidBorder, FirstRightVoidBorder, LastLeftVoidBorder, LastRightVoidBorder;
+    LIB_BLOCK TempA, TempK, CurrentAvailableBlock, CurrentAvailableLength, I;
+    
+    ToRedirect = 0;
+    
+    Buffer = CheckInterval(CurrentTable, A, k);
+    FirstLeftVoidBorder = Buffer.Data[0]->B;
+    FirstRightVoidBorder = A + (Buffer.Data[0]->B - Buffer.Data[0]->A);
+    LastLeftVoidBorder = (A + k) + (Buffer.Data[Buffer.Count - 1]->B - Buffer.Data[Buffer.Count - 1]->A);
+    LastRightVoidBorder = Buffer.Data[Buffer.Count - 1]->B + Buffer.Data[Buffer.Count - 1]->k;
+    
+    for (i = 0; i < Buffer.Count; i++)
+    {
+        Reserved = CheckInterval(ReadonlyNodes, Buffer.Data[i]->B, Buffer.Data[i]->k);
+        
+        for (j = 0; j < Reserved.Count; j++)
+        {
+            IsReserved = FALSE;
+            for (w = 1; w < Reserved.Data[i]->UsedBy->Capacity; w++)
+            {
+                if (GetBitValue(Reserved.Data[i]->UsedBy, w))
+                {
+                    IsReserved = TRUE;
+                    break;
+                }
+            }
+            
+            if (IsReserved)
+            {
+                TempA = Reserved.Data[j]->A;
+                TempK = Reserved.Data[j]->k;
+                
+                ToRedirect += TempK;
+                
+                if (IsInBorders(FirstLeftVoidBorder, FirstRightVoidBorder, Reserved.Data[j]->A))
+                {
+                    if (!IsInBorders(FirstLeftVoidBorder, FirstRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
+                    {
+                        ToRedirect -= (FirstRightVoidBorder - TempA);
+                    }
+                    else
+                    {
+                        ToRedirect -= TempK;
+                    }
+                }
+                if (IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
+                {
+                    if (!IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A))
+                    {
+                        ToRedirect -= (TempA + TempK - LastLeftVoidBorder);
+                    }
+                    else
+                    {
+                        ToRedirect -= TempK;
+                    }
+                }
+                
+                
+            }
+        }
+        
+        DeletePNodeArray(&Reserved);
+    }
+    DeletePNodeArray(&Buffer);
+    
+    if (ToRedirect == 0)
+    {
+        return TRUE;
+    }
+    
+    Available = FindAvailable(ToRedirect, PhysicalFileSize);
+    if (Available.Count == 0)
+    {
+        DeleteNodeArray(&Available);
+        return FALSE;
+    }
+    
+    CurrentAvailableIndex = 0;
+    CurrentAvailableBlock = Available.Data[0].A;
+    CurrentAvailableLength = Available.Data[0].k;
+    
+    Buffer = CheckInterval(CurrentTable, A, k);
+    for (i = 0; i < Buffer.Count; i++)
+    {
+        Reserved = CheckInterval(ReadonlyNodes, Buffer.Data[i]->B, Buffer.Data[i]->k);
+        
+        for (j = 0; j < Reserved.Count; j++)
+        {
+            IsReserved = FALSE;
+            for (w = 1; w < Reserved.Data[i]->UsedBy->Capacity; w++)
+            {
+                if (GetBitValue(Reserved.Data[i]->UsedBy, w))
+                {
+                    IsReserved = TRUE;
+                    break;
+                }
+            }
+            
+            if (IsReserved)
+            {
+                TempA = Reserved.Data[j]->A;
+                TempK = Reserved.Data[j]->k;
+                
+                if (IsInBorders(FirstLeftVoidBorder, FirstRightVoidBorder, Reserved.Data[j]->A))
+                {
+                    if (!IsInBorders(FirstLeftVoidBorder, FirstRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
+                    {
+                        TempA = FirstRightVoidBorder;
+                    }
+                    else
+                    {
+                        TempK = 0;
+                    }
+                }
+                if (IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
+                {
+                    if (!IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A))
+                    {
+                        TempK = LastLeftVoidBorder - TempA;
+                    }
+                    else
+                    {
+                        TempK = 0;
+                    }
+                }
+                
+                if (TempK == 0)
+                {
+                    continue;
+                }
+                
+                for (I = TempA; I < TempA + TempK; )
+                {
+                    if (TempK <= CurrentAvailableLength)
+                    {
+                        mapNode(Buffer.Data[i]->A + (TempA - Buffer.Data[i]->B), TempA, TempK);
+                        CurrentAvailableLength -= TempK;
+                        CurrentAvailableBlock += TempK;
+                        if (CurrentAvailableLength == 0)
+                        {
+                            CurrentAvailableIndex++;
+                            CurrentAvailableBlock = Available.Data[CurrentAvailableIndex].A;
+                            CurrentAvailableLength = Available.Data[CurrentAvailableIndex].k;
+                        }
+                        break;
+                    }
+                    
+                    mapNode(Buffer.Data[i]->A + (TempA - Buffer.Data[i]->B), TempA, CurrentAvailableLength);
+                    TempA += CurrentAvailableLength;
+                    TempK -= CurrentAvailableLength;
+                    CurrentAvailableIndex++;
+                    CurrentAvailableBlock = Available.Data[CurrentAvailableIndex].A;
+                    CurrentAvailableLength = Available.Data[CurrentAvailableIndex].k;
+                }
+            }
+        }
+        
+        DeletePNodeArray(&Reserved);
+    }
+    
+    /*
+            xxxx                     xxxx
+            [      ][           ][      ]
+        [      ]        [           ]       [      ]
+             ^                                   ^  
+        xxxx                                    xxxx
+        [][    ]        [   ][ ][ ][]       [    ][]
+    */
+    
+    DeletePNodeArray(&Buffer);
+    return TRUE;
+}
+
+
+
+
+
