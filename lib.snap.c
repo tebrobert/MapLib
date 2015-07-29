@@ -282,46 +282,19 @@ LIB_NODE_ARRAY FindAvailable(int amount, LIB_BLOCK limit)
     return Buffer;
 }
 
-BOOLEAN PrepareToWrite(LIB_BLOCK A, LIB_BLOCK k)
-{
-    LIB_BLOCK I;
-    LIB_PNODE_ARRAY Buffer;
-    LIB_NODE_ARRAY Available;
-    int i, j;
-    
-    Available = FindAvailable(k, PhysicalFileSize);
-    if (Available.Count == 0)
-    {
-        DeleteNodeArray(&Available);
-        return FALSE;
-    }
-    
-    I = A;
-    for (i = 0; i < Available.Count; i++)
-    {
-        mapNode(I, Available.Data[i].A, Available.Data[i].k);
-        I += Available.Data[i].k;
-    }
-    DeleteNodeArray(&Available);
-    
-    SnapshotSave(0);
-    
-    return TRUE;
-}
-
 BOOLEAN IsInBorders(LIB_BLOCK Left, LIB_BLOCK Right, LIB_BLOCK Point)
 {
     return (Point >= Left && Point < Right);
 }
 
-BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
+BOOLEAN PrepareToWrite(LIB_BLOCK A, LIB_BLOCK k)
 {
     LIB_PNODE_ARRAY Buffer, Reserved;
     LIB_NODE_ARRAY Available;
     BOOLEAN IsReserved;
     int i, j, w, CurrentAvailableIndex;
     LIB_BLOCK ToRedirect, FirstLeftVoidBorder, FirstRightVoidBorder, LastLeftVoidBorder, LastRightVoidBorder;
-    LIB_BLOCK TempA, TempK, CurrentAvailableBlock, CurrentAvailableLength, I;
+    LIB_BLOCK TempA, TempK, CurrentAvailableBlock, CurrentAvailableLength;
     
     ToRedirect = 0;
     
@@ -331,16 +304,31 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
     LastLeftVoidBorder = (A + k) + (Buffer.Data[Buffer.Count - 1]->B - Buffer.Data[Buffer.Count - 1]->A);
     LastRightVoidBorder = Buffer.Data[Buffer.Count - 1]->B + Buffer.Data[Buffer.Count - 1]->k;
     
+    printf("FirstLeftVoidBorder = %d\n", FirstLeftVoidBorder);
+    printf("FirstRightVoidBorder = %d\n", FirstRightVoidBorder);
+    printf("LastLeftVoidBorder = %d\n", LastLeftVoidBorder);
+    printf("LastRightVoidBorder = %d\n", LastRightVoidBorder);
+    
+    printf("Buffer.Count = %d\n", Buffer.Count);
     for (i = 0; i < Buffer.Count; i++)
     {
         Reserved = CheckInterval(ReadonlyNodes, Buffer.Data[i]->B, Buffer.Data[i]->k);
+        printf("r=c(%d,%d)\n", Buffer.Data[i]->B, Buffer.Data[i]->k);
         
+        printf("Reserved.Count = %d\n", Reserved.Count);
         for (j = 0; j < Reserved.Count; j++)
         {
             IsReserved = FALSE;
-            for (w = 1; w < Reserved.Data[i]->UsedBy->Capacity; w++)
+            
+            printf("LOOOL!!!!!!!!!\n");
+            printf("Reserved.Data[i]->A = %d\n", Reserved.Data[j]->A);
+            printf("Reserved.Data[i]->k = %d\n", Reserved.Data[j]->k);
+            printf("Reserved.Data[i]->UsedBy->Capacity = %d\n", Reserved.Data[j]->UsedBy->Capacity);
+            printf("L!!!!!!!!!\n");
+            
+            for (w = 1; w < Reserved.Data[j]->UsedBy->Capacity; w++)
             {
-                if (GetBitValue(Reserved.Data[i]->UsedBy, w))
+                if (GetBitValue(Reserved.Data[j]->UsedBy, w))
                 {
                     IsReserved = TRUE;
                     break;
@@ -356,6 +344,7 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
                 
                 if (IsInBorders(FirstLeftVoidBorder, FirstRightVoidBorder, Reserved.Data[j]->A))
                 {
+                    printf("NYYYYYYYYYYP1\n");
                     if (!IsInBorders(FirstLeftVoidBorder, FirstRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
                     {
                         ToRedirect -= (FirstRightVoidBorder - TempA);
@@ -365,8 +354,9 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
                         ToRedirect -= TempK;
                     }
                 }
-                if (IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
+                if (IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k - 1))
                 {
+                    printf("NYYYYYYYYYYP2\n");
                     if (!IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A))
                     {
                         ToRedirect -= (TempA + TempK - LastLeftVoidBorder);
@@ -380,15 +370,16 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
                 
             }
         }
-        
         DeletePNodeArray(&Reserved);
     }
     DeletePNodeArray(&Buffer);
     
+    printf("ToRedirect = %d\n", ToRedirect);
     if (ToRedirect == 0)
     {
         return TRUE;
     }
+    
     
     Available = FindAvailable(ToRedirect, PhysicalFileSize);
     if (Available.Count == 0)
@@ -396,6 +387,10 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
         DeleteNodeArray(&Available);
         return FALSE;
     }
+    
+    printf("Available.Count = %d\n", Available.Count);
+    printf("Available.Data[0].A = %d\n", Available.Data[0].A);
+    printf("Available.Data[0].k = %d\n", Available.Data[0].k);
     
     CurrentAvailableIndex = 0;
     CurrentAvailableBlock = Available.Data[0].A;
@@ -409,9 +404,9 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
         for (j = 0; j < Reserved.Count; j++)
         {
             IsReserved = FALSE;
-            for (w = 1; w < Reserved.Data[i]->UsedBy->Capacity; w++)
+            for (w = 1; w < Reserved.Data[j]->UsedBy->Capacity; w++)
             {
-                if (GetBitValue(Reserved.Data[i]->UsedBy, w))
+                if (GetBitValue(Reserved.Data[j]->UsedBy, w))
                 {
                     IsReserved = TRUE;
                     break;
@@ -427,6 +422,7 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
                 {
                     if (!IsInBorders(FirstLeftVoidBorder, FirstRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
                     {
+                        TempK -= FirstRightVoidBorder - TempA;
                         TempA = FirstRightVoidBorder;
                     }
                     else
@@ -434,7 +430,7 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
                         TempK = 0;
                     }
                 }
-                if (IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k))
+                if (IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A + Reserved.Data[j]->k - 1))
                 {
                     if (!IsInBorders(LastLeftVoidBorder, LastRightVoidBorder, Reserved.Data[j]->A))
                     {
@@ -446,16 +442,14 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
                     }
                 }
                 
-                if (TempK == 0)
+                while (TempK > 0)
                 {
-                    continue;
-                }
-                
-                for (I = TempA; I < TempA + TempK; )
-                {
+                    printf("GRAPP> TempK = %d, CurrentAvailableLength = %d\n", TempK, CurrentAvailableLength);
                     if (TempK <= CurrentAvailableLength)
                     {
-                        mapNode(Buffer.Data[i]->A + (TempA - Buffer.Data[i]->B), TempA, TempK);
+                        printf("here1\n");
+                        printf("<%d, %d, %d>\n\n",Buffer.Data[i]->A+(TempA-Buffer.Data[i]->B), CurrentAvailableBlock, TempK);
+                        mapNode(Buffer.Data[i]->A + (TempA - Buffer.Data[i]->B), CurrentAvailableBlock, TempK);
                         CurrentAvailableLength -= TempK;
                         CurrentAvailableBlock += TempK;
                         if (CurrentAvailableLength == 0)
@@ -467,7 +461,9 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
                         break;
                     }
                     
-                    mapNode(Buffer.Data[i]->A + (TempA - Buffer.Data[i]->B), TempA, CurrentAvailableLength);
+                    printf("here2\n");
+                    printf("<%d, %d, %d>\n\n", Buffer.Data[i]->A + (TempA - Buffer.Data[i]->B), CurrentAvailableBlock, TempK);
+                    mapNode(Buffer.Data[i]->A + (TempA - Buffer.Data[i]->B), CurrentAvailableBlock, CurrentAvailableLength);
                     TempA += CurrentAvailableLength;
                     TempK -= CurrentAvailableLength;
                     CurrentAvailableIndex++;
@@ -479,21 +475,8 @@ BOOLEAN PrepareToWrite_new(LIB_BLOCK A, LIB_BLOCK k)
         
         DeletePNodeArray(&Reserved);
     }
-    
-    /*
-            xxxx                     xxxx
-            [      ][           ][      ]
-        [      ]        [           ]       [      ]
-             ^                                   ^  
-        xxxx                                    xxxx
-        [][    ]        [   ][ ][ ][]       [    ][]
-    */
-    
     DeletePNodeArray(&Buffer);
+    
+    SnapshotZeroSave(0);
     return TRUE;
 }
-
-
-
-
-

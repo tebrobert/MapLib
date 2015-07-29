@@ -1,7 +1,7 @@
 ﻿#ifndef _LIB_A_H
 #define _LIB_A_H
 
-// #include <stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <ntddk.h>
 
