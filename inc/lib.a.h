@@ -1,7 +1,6 @@
 ﻿#ifndef _LIB_A_H
 #define _LIB_A_H
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <ntddk.h>
 
@@ -27,7 +26,7 @@ PVOID   MemoryAllocate(int NumberOfBytes);
 VOID    MemoryFree(PVOID Buffer);
 PVOID   MemoryReallocate(PVOID Buffer, int NumberOfBytes);
 
-VOID    InitLibrary(BOOLEAN _LibraryMode, ULONG _LogicalFileSize, ULONG _PhysicalFileSize, int _MaxSlotCount);
+VOID    InitLibrary(BOOLEAN _LibraryMode, ULONG _LogicalFileSize, ULONG _PhysicalFileSize, int _MaxSnapshotCount);
 VOID    DeinitLibrary();
 
 #endif //_LIB_A_H

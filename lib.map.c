@@ -1,6 +1,6 @@
 ﻿#include "lib.a.h"
 
-LIB_BLOCK checkNode(LIB_BLOCK A, BOOLEAN *ok){
+LIB_BLOCK CheckBlock(LIB_BLOCK A, BOOLEAN *ok){
     LIB_NODE *P = FindNode(CurrentTable, A);
     if(P == NULL)
     {
@@ -41,7 +41,7 @@ LIB_PNODE_ARRAY CheckInterval(LIB_PTABLE Table, LIB_BLOCK A, LIB_BLOCK k)
     return Buffer;
 }
 
-BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_BLOCK k)
+BOOLEAN MapInterval(LIB_BLOCK A, LIB_BLOCK B, LIB_BLOCK k)
 {
     BOOLEAN     ok;
     LIB_NODE    New, EdgeOuterLeft, EdgeOuterRight;
@@ -52,7 +52,7 @@ BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_BLOCK k)
     PointLeft = A;
     PointRight = A + k;
     
-    if (existNode(PointLeft))
+    if (ExistNode(PointLeft))
     {
         EdgeLeft = FindNode(CurrentTable, PointLeft);
         IterLeft = EdgeLeft;
@@ -63,7 +63,7 @@ BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_BLOCK k)
         IterLeft = NextNode(CurrentTable, PointLeft);
     }
 
-    if (existNode(PointRight))
+    if (ExistNode(PointRight))
     {
         EdgeRight = FindNode(CurrentTable, PointRight);
         IterRight = NextNode(CurrentTable, PointRight);
@@ -128,10 +128,10 @@ BOOLEAN mapNode(LIB_BLOCK A, LIB_BLOCK B, LIB_BLOCK k)
     return TRUE;
 }
 
-BOOLEAN unmapNode(LIB_BLOCK A, LIB_BLOCK k)
+BOOLEAN UnmapInterval(LIB_BLOCK A, LIB_BLOCK k)
 {
     BOOLEAN ok;
-    mapNode(A, (LIB_BLOCK)NULL, k);
+    MapInterval(A, (LIB_BLOCK)NULL, k);
     ok = DeleteNode(CurrentTable, A);
     return ok;
 }

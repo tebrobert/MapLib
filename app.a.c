@@ -18,7 +18,7 @@ int main()
     APP_COMMAND FirstCommand;
     LIB_MODE _LibraryMode;
     ULONG _VirtualFileSize, _PhysicalFileSize;
-    int _MaxSlotCount;
+    int _MaxSnapshotCount;
     
     HardFileName = "hard";
     
@@ -26,8 +26,8 @@ int main()
     _LibraryMode = USER_MODE;
     _PhysicalFileSize = GetFileSize(HardFileName);
     _VirtualFileSize = 10;
-    _MaxSlotCount = 10;
-    InitLibrary(_LibraryMode, _VirtualFileSize, _PhysicalFileSize, _MaxSlotCount);
+    _MaxSnapshotCount = 10;
+    InitLibrary(_LibraryMode, _VirtualFileSize, _PhysicalFileSize, _MaxSnapshotCount);
     
     InitCommandString();
     
@@ -59,7 +59,6 @@ int main()
         
         printf("\n");
     }
-    
     DeinitCommandString();
     DeinitLibrary();
     

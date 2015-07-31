@@ -105,13 +105,13 @@ VOID DoOnCommandCheck(int comC, char **comV)
                 }
                 
                 A = str2dec(comV[1]);
-                if (!existNode(A))
+                if (!ExistNode(A))
                 {
                     printf("%d not mapped!\n", A);
                     return;
                 }
                 
-                printf("%d -> %d\n", A, checkNode(A, &ok));
+                printf("%d -> %d\n", A, CheckBlock(A, &ok));
                 return;
 
             case 3:
@@ -182,7 +182,7 @@ VOID DoOnCommandMap(int comC, char **comV)
     A = str2dec(comV[1]);
     B = str2dec(comV[2]);
     k = str2dec(comV[3]);
-    mapNode(A, B, k);
+    MapInterval(A, B, k);
     printf("Mapped [%d, %d) -> [%d, %d)\n", A, A + k, B, B + k);
 }
 
@@ -203,7 +203,7 @@ VOID DoOnCommandUnmap(int comC, char **comV)
     
     A = str2dec(comV[1]);
     k = str2dec(comV[2]);
-    unmapNode(A, k);
+    UnmapInterval(A, k);
     printf("Unmapped [%d, %d)\n", A, A + k);
 }
 
@@ -369,17 +369,11 @@ void DoOnCommandSnapshot(int comC, char **comV)
         }
         
         k = str2dec(comV[2]);
-        SnapshotLoad(k);
+        ok = SnapshotLoad(k);
         
-        if (k == -1)
+        if (!ok)
         {
-            printf("Snapshot was not loaded! Snapshot was not saved to this slot.\n");
-            return;
-        }
-        
-        if (k == -2)
-        {
-            printf("Snapshot was not loaded! Slot number is out of range.\n");
+            printf("Snapshot was not loaded!\n");
             return;
         }
         
@@ -403,17 +397,11 @@ void DoOnCommandSnapshot(int comC, char **comV)
         }
         
         k = str2dec(comV[2]);
-        k = SnapshotDelete(k);
+        ok = SnapshotDelete(k);
         
-        if (k == -1)
+        if (!ok)
         {
-            printf("Snapshot was not deleted! Snapshot was not saved to this slot.\n");
-            return;
-        }
-        
-        if (k == -2)
-        {
-            printf("Snapshot was not deleted! Slot number is out of range.\n");
+            printf("Snapshot was not deleted!\n");
             return;
         }
         
@@ -437,9 +425,9 @@ void DoOnCommandSnapshot(int comC, char **comV)
         }
         
         k = str2dec(comV[2]);
-        k = SnapshotSave(k);
+        ok = SnapshotSave(k);
         
-        if (k == -2)
+        if (!ok)
         {
             printf("Snapshot was not saved! Slot number is out of range.\n");
             return;

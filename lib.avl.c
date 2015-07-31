@@ -26,7 +26,7 @@ RTL_GENERIC_COMPARE_RESULTS CompareRoutine
     return GenericEqual;
 }
 
-PVOID Allocate_Routine
+PVOID AllocateRoutine
 (
     __in struct _RTL_AVL_TABLE  *T,
     __in CLONG  ByteSize
@@ -41,7 +41,7 @@ VOID FreeRoutine
     __in PVOID  Buffer
 )
 {
-    // MemoryFree(Buffer);
+    MemoryFree(Buffer);
 }
 
 LIB_PNODE AddNode(LIB_PTABLE Table, LIB_NODE T)
@@ -52,7 +52,7 @@ LIB_PNODE AddNode(LIB_PTABLE Table, LIB_NODE T)
     return ptr;
 }
 
-BOOLEAN existNode(LIB_BLOCK A)
+BOOLEAN ExistNode(LIB_BLOCK A)
 {
     LIB_NODE T, *P;
     T.A = A;
@@ -134,7 +134,7 @@ VOID SplitNode(LIB_PTABLE Table, LIB_PNODE Node, LIB_BLOCK Point)
 LIB_PTABLE CreateTable()
 {
     LIB_PTABLE Table = (LIB_PTABLE)MemoryAllocate(sizeof(LIB_TABLE));
-    RtlInitializeGenericTableAvl(Table, CompareRoutine, Allocate_Routine, FreeRoutine, NULL);
+    RtlInitializeGenericTableAvl(Table, CompareRoutine, AllocateRoutine, FreeRoutine, NULL);
     return Table;
 }
 
@@ -181,7 +181,10 @@ VOID DeletePTableArray(LIB_PTABLE_ARRAY *TA)
 {
     int i;
     for (i = 0; i < TA->Count; i++)
-        DeleteTable(TA->Data[i]);
+    {
+        if (GetBitValue(&TA->SlotBitmask, i))
+            DeleteTable(TA->Data[i]);
+    }
     DeleteBitmask(&TA->SlotBitmask);
     MemoryFree(TA->Data);
 }

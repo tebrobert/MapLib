@@ -4,8 +4,7 @@
 #include "lib.a.h"
 
 typedef unsigned int LIB_BLOCK;
-typedef RTL_AVL_TABLE LIB_TABLE;
-typedef PRTL_AVL_TABLE LIB_PTABLE;
+typedef RTL_AVL_TABLE LIB_TABLE, *LIB_PTABLE;
 
 typedef struct
 {
@@ -50,11 +49,11 @@ typedef struct
 LIB_NODE_ARRAY;
 
 RTL_AVL_COMPARE_ROUTINE     CompareRoutine;
-RTL_AVL_ALLOCATE_ROUTINE    Allocate_Routine;
+RTL_AVL_ALLOCATE_ROUTINE    AllocateRoutine;
 RTL_AVL_FREE_ROUTINE        FreeRoutine;
 
 LIB_PNODE           AddNode(LIB_PTABLE Table, LIB_NODE T);
-BOOLEAN             existNode(LIB_BLOCK A);
+BOOLEAN             ExistNode(LIB_BLOCK A);
 LIB_PNODE           FindNode(LIB_PTABLE, LIB_BLOCK A);
 BOOLEAN             DeleteNode(LIB_PTABLE Table, LIB_BLOCK A);
 LIB_PNODE           NextNode(LIB_PTABLE, LIB_BLOCK A);

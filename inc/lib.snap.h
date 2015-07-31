@@ -11,12 +11,13 @@ LIB_PTABLE ReadonlyNodes;
 int SnapshotCount();
 int SnapshotCapacity();
 int SnapshotMake();
-int SnapshotLoad(int n);
-int SnapshotSave(int n);
-int SnapshotDelete(int n);
+BOOLEAN SnapshotSave(int n);
+BOOLEAN SnapshotLoad(int n);
+BOOLEAN SnapshotDelete(int n);
+
+BOOLEAN         PrepareToWrite(LIB_BLOCK A, LIB_BLOCK k);
 
 int             FindEmptySlot(LIB_PTABLE_ARRAY *TS);
 LIB_NODE_ARRAY  FindAvailable(int amount, LIB_BLOCK limit);
-BOOLEAN         PrepareToWrite(LIB_BLOCK A, LIB_BLOCK k);
 
 #endif //_LIB_SNAP_H

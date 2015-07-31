@@ -272,7 +272,7 @@ void printVirtualFile(const char *fileName, LIB_PTABLE Table)
     printf("virtual is %lld bytes:\n", fileSize);
     for(i = 0; i < 10; i++)
     {
-        B = checkNode(i, &ok);
+        B = CheckBlock(i, &ok);
         if(ok)
         {
             Byte = readByte(fileName, B, &ok);
@@ -311,7 +311,7 @@ readVirtualFile(LIB_BLOCK A, LIB_BLOCK k, const char *fileName, LIB_PTABLE Table
     //Read file
     for(i = 0; i < k; i++)
     {
-        B = checkNode(A + i, &ok);
+        B = CheckBlock(A + i, &ok);
         if(ok)
         {
             Byte = readByte(fileName, B, &ok);
@@ -338,7 +338,7 @@ void writeVirtualFile(LIB_BLOCK A, LIB_BLOCK k, char **Bytes, const char *fileNa
     //Write file
     for (i = 0; i < k; i++)
     {
-        B = checkNode(A + i, &ok);
+        B = CheckBlock(A + i, &ok);
         if (ok)
             writeByte(fileName, B, str2hex(Bytes[i]), &ok);
     }

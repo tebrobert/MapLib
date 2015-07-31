@@ -36,17 +36,17 @@ PVOID MemoryReallocate(PVOID Buffer, int NumberOfBytes)
     return temp;
 }
 
-VOID InitLibrary(BOOLEAN _LibraryMode, ULONG _VirtualFileSize, ULONG _PhysicalFileSize, int _MaxSlotCount)
+VOID InitLibrary(BOOLEAN _LibraryMode, ULONG _VirtualFileSize, ULONG _PhysicalFileSize, int _MaxSnapshotCount)
 {
     LibraryMode = _LibraryMode;
     VirtualFileSize = _VirtualFileSize;
     PhysicalFileSize = _PhysicalFileSize;
     
-    TableStorage = CreatePTableArray(_MaxSlotCount + 1);
+    TableStorage = CreatePTableArray(_MaxSnapshotCount + 1);
     CurrentTable = CreateTable();
     ReadonlyNodes = CreateTable();
     
-    mapNode(0, 0, VirtualFileSize);
+    MapInterval(0, 0, VirtualFileSize);
     SnapshotZeroSave(0);
 }
 
