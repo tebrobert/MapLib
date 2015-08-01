@@ -333,7 +333,23 @@ void writeVirtualFile(LIB_BLOCK A, LIB_BLOCK k, char **Bytes, const char *fileNa
     ULONG i, fileSize = VirtualFileSize;
     char *S, Byte;
     LIB_BLOCK B;
-    BOOLEAN ok;
+    BOOLEAN ok, ll;
+    
+    //Prepare to write
+    ok = PrepareToWrite(A, k);
+    if (!ok)
+    {
+        printf("Can't write bytes! Not enough available space.\n\n");
+        return;
+    }
+    
+    
+    //Check range
+    if (!(ExistNode(A) && ExistNode(A + k - 1))) //-1!
+    {
+        printf("Can't write bytes! Out of range.\n\n");
+        return;
+    }
     
     //Write file
     for (i = 0; i < k; i++)
@@ -344,7 +360,10 @@ void writeVirtualFile(LIB_BLOCK A, LIB_BLOCK k, char **Bytes, const char *fileNa
     }
     
     if (!ok)
+    {
         printf("Can't write bytes\n\n");
-    else
-        printf("Write success!\n\n");
+        return;
+    }
+    
+    printf("Write success!\n\n");
 }

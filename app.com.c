@@ -69,14 +69,17 @@ VOID DoOnCommandHelp(int comC, char **comV)
     printf("\tread     - read data from storage (virtual or hard)\n");
     printf("\twrite    - write data to storage (virtual or hard)\n");
     printf("\tsnapshot - manage backup copies of virtual storage\n");
+    printf("\t\n");
+    printf("\tType \"[command] help\" to see details\n");
 }
 
 VOID DoOnCommandInit(int comC, char **comV)
 {
-    if(comC < 2 || strcmp(comV[1], "help") == 0){
-        //printf("Usage: init ... \n");
-        return;
-    }
+    return;
+    // if(comC < 2 || strcmp(comV[1], "help") == 0){
+        // printf("Usage: init ... \n");
+        // return;
+    // }
     
 }
 
@@ -209,52 +212,82 @@ VOID DoOnCommandUnmap(int comC, char **comV)
 
 VOID DoOnCommandPrint(int comC, char **comV)
 {
-    if (comC != 2 || strcmp(comV[1], "help") == 0){
-        printf("Usage: print [disk]\n");
+    int ArgOffset;
+    BOOLEAN ModeHard;
+    
+    // Checking args amount
+    if ((comC > 2) || (comC >= 2 && strcmp(comV[1], "help") == 0))
+    {
+        printf("Usage: print [-disk]\n");
+        printf("       disk - \"L\" (default) or \"H\"\n");
         return;
     }
     
-    if (strcmp(comV[1], "H") == 0){
+    // Checking disk presence
+    ArgOffset = 0;
+    ModeHard = FALSE;
+    
+    if (comC > 1 && strcmp(comV[1], "L") != 0 && strcmp(comV[1], "H") != 0)
+        ArgOffset++;
+    else
+    {
+        if (comC > 1 && strcmp(comV[1], "H") == 0)
+            ModeHard = TRUE;
+    }
+    
+    // Printing
+    if (ModeHard)
+    {
         printFile(HardFileName);
         return;
     }
     
-    if (strcmp(comV[1], "L") == 0){
-        printVirtualFile(HardFileName, CurrentTable);
-        return;
-    }
-    
-    printf("Invalid disk format (use L or H)\n");
+    printVirtualFile(HardFileName, CurrentTable);
 }
 
 VOID DoOnCommandRead(int comC, char **comV)
 {
-    int k;
+    int k, ArgOffset;
     LIB_BLOCK A;
     BOOLEAN ModeHard;
     
-    if(comC != 4 || strcmp(comV[1], "help") == 0){
-        printf("Usage: read [disk] [block] [amount]\n");
+    // Checking args amount
+    if((comC < 3 || comC > 4) || (comC >= 2 && strcmp(comV[1], "help") == 0))
+    {
+        printf("Usage: read [-disk] [block] [amount]\n");
+        printf("       disk - \"L\" (default) or \"H\"\n");
         return;
     }
     
-    if (strcmp(comV[1], "H") == 0)
-        ModeHard = TRUE;
+    // Checking disk presense
+    ArgOffset = 0;
+    ModeHard = FALSE;
+    
+    if (comC > 1 && strcmp(comV[1], "L") != 0 && strcmp(comV[1], "H") != 0)
+        ArgOffset++;
     else
-        ModeHard = FALSE;
+    {
+        if (comC > 1 && strcmp(comV[1], "H") == 0)
+            ModeHard = TRUE;
+    }
     
-    if(!ModeHard && strcmp(comV[1], "L") != 0){
-        printf("Invalid disk format (use L or H)\n");
+    // Checking block format
+    if(!isDec(comV[2 - ArgOffset]))
+    {
+        printf("Invalid block format\n");
         return;
     }
     
-    if(!isDec(comV[2]) || !isDec(comV[3])){
-        printf("Invalid block or amount format\n");
+    // Checking amount format
+    if(!isDec(comV[3 - ArgOffset]))
+    {
+        printf("Invalid amount format\n");
         return;
     }
     
-    A = str2dec(comV[2]);
-    k = str2dec(comV[3]);
+    // Reading
+    A = str2dec(comV[2 - ArgOffset]);
+    k = str2dec(comV[3 - ArgOffset]);
     
     if (ModeHard)
     {
@@ -267,53 +300,65 @@ VOID DoOnCommandRead(int comC, char **comV)
 
 VOID DoOnCommandWrite(int comC, char **comV)
 {
-    int k, i;
+    int k, i, ArgOffset;
     LIB_BLOCK A;
     BOOLEAN DataIsCorrect, ModeHard;
     
-    if(comC < 4 || strcmp(comV[1], "help") == 0){
-        printf("Usage: write [disk] [block] [byte 1] ... [byte N]\n");
+    // Checking args amount
+    if ((comC < 3) || (comC >= 2 && strcmp(comV[1], "help") == 0))
+    {
+        printf("Usage: write [-disk] [block] [byte 1] ... [byte N]\n");
+        printf("       disk - \"L\" (default) or \"H\"\n");
         return;
     }
     
-    if(strcmp(comV[1], "H") == 0)
-        ModeHard = TRUE;
+    // Checking disk presense
+    ArgOffset = 0;
+    ModeHard = FALSE;
+    
+    if (comC > 1 && strcmp(comV[1], "L") != 0 && strcmp(comV[1], "H") != 0)
+        ArgOffset++;
     else
-        ModeHard = FALSE;
-    
-    if(!ModeHard && strcmp(comV[1], "L") != 0){
-        printf("Invalid disk format\n");
-        return;
+    {
+        if(comC > 1 && strcmp(comV[1], "H") == 0)
+            ModeHard = TRUE;
     }
     
-    if(!isDec(comV[2])){
+    // Checking block format
+    if(!isDec(comV[2 - ArgOffset]))
+    {
         printf("Invalid block format\n");
         return;
     }
     
+    // Checking bytes format
     DataIsCorrect = TRUE;
     for (i = 3; DataIsCorrect && i < comC; i++)
     {
-        if(!isHex(comV[i]))
+        if(!isHex(comV[i - ArgOffset]))
+        {
             DataIsCorrect = FALSE;
+            break;
+        }
     }
     
     if (!DataIsCorrect)
     {
-        printf("Invalid byte format\n");
+        printf("Invalid byte format (#%d: %s)\n", i - 2, comV[i - ArgOffset]);
         return;
     }
     
-    A = str2dec(comV[2]);
-    k = comC - 3;
+    //Writing data
+    A = str2dec(comV[2 - ArgOffset]);
+    k = comC - (3 - ArgOffset);
     
     if (ModeHard)
     {
-        writeFile(A, k, &comV[3], HardFileName);
+        writeFile(A, k, &comV[3 - ArgOffset], HardFileName);
         return;
     }
     
-    writeVirtualFile(A, k, &comV[3], HardFileName, CurrentTable);
+    writeVirtualFile(A, k, &comV[3 - ArgOffset], HardFileName, CurrentTable);
 }
 
 void DoOnCommandSnapshot(int comC, char **comV)
