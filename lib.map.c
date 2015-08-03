@@ -17,17 +17,20 @@ LIB_PNODE_ARRAY CheckInterval(LIB_PTABLE Table, LIB_BLOCK A, LIB_BLOCK k)
     LIB_PNODE ptr;
     LIB_PNODE_ARRAY Buffer;
     
+    // Count blocks
     ptr = FindNode(Table, A);
     if (ptr == NULL)
         ptr = NextNode(Table, A);
     
-    for (i = 0; ptr != NULL && (A + k > ptr->A); i++)
+    for (i = 0; ptr != NULL && (ptr->A < A + k); i++)
     {
         ptr = NextNode(Table, ptr->A);
     }
     
+    // Allocate memory for blocks
     Buffer = CreatePNodeArray(i);
     
+    // Write blocks
     ptr = FindNode(Table, A);
     if (ptr == NULL)
         ptr = NextNode(Table, A);

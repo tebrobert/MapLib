@@ -30,23 +30,22 @@ int SnapshotCapacity()
     return TableStorage.Capacity - 1;
 }
 
-BOOLEAN SnapshotZeroSave(int n)
+BOOLEAN SnapshotZeroSave(int index)
 {
-    int i, k, index;
+    int i, k;
     LIB_PTABLE NewTable;
     LIB_NODE New;
     LIB_PNODE elem, temp;
     LIB_BLOCK I, I_prev;
     LIB_PNODE_ARRAY Buffer;
     
-    index = n;
     if (index >= TableStorage.Capacity || index < 0) 
         return FALSE;
     
     NewTable = CopyTable(CurrentTable);
     
     if (GetBitValue(&TableStorage.SlotBitmask, index))
-        SnapshotDelete(n);
+        SnapshotDelete(index);
     
     elem = (LIB_NODE*)RtlEnumerateGenericTableAvl(CurrentTable, TRUE);
     while (elem != NULL)
