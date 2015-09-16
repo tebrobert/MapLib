@@ -27,7 +27,8 @@
     https://www.microsoft.com/en-us/download/details.aspx?id=11800 с
     параметрами "chk x64 WIN7" на операционной системе Windows 7 x64
     Professional SP1. Для запуска среды используется скрипт "x64 Checked Build
-    Environment.bat"
+    Environment.bat", далее следует ввести "%p%" для перехода в директорию
+    проекта.
     
     Для сборки утилиты по исходному коду библиотеки нужно запустить "bec.bat".
     Для сборки самой библиотеки нужно запустить "bl.bat". Для сборки утилиты с
